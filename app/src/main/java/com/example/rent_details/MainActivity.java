@@ -25,7 +25,7 @@ public class MainActivity extends AppCompatActivity {
 
     EditText ed_username,ed_email,ed_password;
     String str_name,str_username,str_password;
-    String url="http://rentdetails.000webhostapp.com/";
+    String url="http://rentdetails.000webhostapp.com/register.php";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -37,8 +37,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void moveToLogin(View view) {
-
-
+        startActivity(new Intent(this,login.class));
+        finish();
     }
 
     public void Register(View view) {
