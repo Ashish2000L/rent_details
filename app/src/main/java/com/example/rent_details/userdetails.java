@@ -71,6 +71,9 @@ public class userdetails extends AppCompatActivity {
         else if(address.isEmpty()){
             Toast.makeText(this, "Enter Address", Toast.LENGTH_SHORT).show();
             return;
+        }else if(bill.isEmpty())
+        {
+            Toast.makeText(this, "bill required", Toast.LENGTH_SHORT).show();
         }
 
         else{
@@ -83,10 +86,20 @@ public class userdetails extends AppCompatActivity {
                             if(response.equalsIgnoreCase("Data Inserted")){
                                 Toast.makeText(userdetails.this, "Data Inserted", Toast.LENGTH_SHORT).show();
                                 progressDialog.dismiss();
+                                txtName.setText("");
+                                txtAddress.setText("");
+                                txtContact.setText("");
+                                txtEmail.setText("");
+                                txtbill.setText("");
                             }
                             else{
                                 Toast.makeText(userdetails.this, response, Toast.LENGTH_SHORT).show();
                                 progressDialog.dismiss();
+                                txtName.setText("");
+                                txtAddress.setText("");
+                                txtContact.setText("");
+                                txtEmail.setText("");
+                                txtbill.setText("");
                             }
 
                         }
@@ -95,6 +108,11 @@ public class userdetails extends AppCompatActivity {
                 public void onErrorResponse(VolleyError error) {
                     Toast.makeText(userdetails.this, error.getMessage(), Toast.LENGTH_SHORT).show();
                     progressDialog.dismiss();
+                    txtName.setText("");
+                    txtAddress.setText("");
+                    txtContact.setText("");
+                    txtEmail.setText("");
+                    txtbill.setText("");
                 }
             }
 
