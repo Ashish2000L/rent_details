@@ -2,11 +2,18 @@ package com.example.rent_details;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.AlertDialog;
 import android.app.DownloadManager;
+import android.app.ProgressDialog;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -19,6 +26,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 public class showdetails extends AppCompatActivity {
 
@@ -38,6 +47,72 @@ public class showdetails extends AppCompatActivity {
         myadapter = new myadapter(this,renterArrayList);
         listView.setAdapter(myadapter);
 
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, final int position, long id) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
+                ProgressDialog progressDialog = new ProgressDialog(view.getContext());
+
+                CharSequence[] dialogitem={"view data","edit data","delete data"};
+
+                builder.setTitle(renterArrayList.get(position).getDate());
+                builder.setItems(dialogitem, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int i) {
+
+
+                        switch(i){
+                            case 0:
+                                startActivity(new Intent(getApplicationContext(),viewdata.class).putExtra(
+                                        "position",position
+                                ));
+                                break;
+                            case 1:
+                                break;
+                            case 2:
+                                deletedata(position);
+                                break;
+                        }
+
+                    }
+                });
+
+                builder.create().show();
+            }
+        });
+
+        retrivedata();
+    }
+
+    public void deletedata(final int position)
+    {
+        StringRequest request = new StringRequest(Request.Method.POST, "http://rentdetails.000webhostapp.com/delete.php",
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        if(response.equalsIgnoreCase("Data deleted successfully")){
+                            Toast.makeText(showdetails.this, "Data deleted", Toast.LENGTH_SHORT).show();
+                        }else{
+                            Toast.makeText(showdetails.this, "Not deleted", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                },
+        new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Toast.makeText(showdetails.this, error.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        }){
+            @Override
+            protected Map<String, String> getParams() throws AuthFailureError {
+
+                Map<String,String> params = new HashMap<String,String>();
+                params.put("date", String.valueOf(position));
+                return super.getParams();
+            }
+        };
+        RequestQueue requestQueue = Volley.newRequestQueue(this);
+        requestQueue.add(request);
     }
     public void retrivedata()
     {
