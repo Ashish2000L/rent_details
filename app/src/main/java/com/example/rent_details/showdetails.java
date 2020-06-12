@@ -3,7 +3,6 @@ package com.example.rent_details;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.AlertDialog;
-import android.app.DownloadManager;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -70,7 +69,7 @@ public class showdetails extends AppCompatActivity {
                             case 1:
                                 break;
                             case 2:
-                                deletedata(position);
+                                deletedata(renterArrayList.get(position).getDate());
                                 break;
                         }
 
@@ -84,7 +83,7 @@ public class showdetails extends AppCompatActivity {
         retrivedata();
     }
 
-    public void deletedata(final int position)
+    public void deletedata(final String position)
     {
         StringRequest request = new StringRequest(Request.Method.POST, "http://rentdetails.000webhostapp.com/delete.php",
                 new Response.Listener<String>() {
@@ -106,8 +105,8 @@ public class showdetails extends AppCompatActivity {
             @Override
             protected Map<String, String> getParams() throws AuthFailureError {
 
-                Map<String,String> params = new HashMap<String,String>();
-                params.put("date", String.valueOf(position));
+                Map<String, String> params = new HashMap<>();
+                params.put("date", position);
                 return super.getParams();
             }
         };
