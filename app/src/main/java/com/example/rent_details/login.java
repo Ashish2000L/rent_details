@@ -31,8 +31,8 @@ public class login extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        ed_username = findViewById(R.id.ed_email);
-        ed_password = findViewById(R.id.ed_password);
+        ed_username = findViewById(R.id.ed_username);
+        ed_password = findViewById(R.id.ed_passwords);
     }
 
     public void Login(View view) {
@@ -56,29 +56,34 @@ public class login extends AppCompatActivity {
                 @Override
                 public void onResponse(String response) {
                     progressDialog.dismiss();
-                    if(response.equalsIgnoreCase("logged in successfully")){
+                    if(response.equalsIgnoreCase("admin")){
 
-                        Toast.makeText(login.this, response, Toast.LENGTH_SHORT).show();
+                        Toast.makeText(login.this, response, Toast.LENGTH_LONG).show();
 
                         ed_username.setText("");
                         ed_password.setText("");
 
-                    }else{
-                        Toast.makeText(login.this, response, Toast.LENGTH_SHORT).show();
+                    }else if(response.equalsIgnoreCase("renter")){
+                        Toast.makeText(login.this, response, Toast.LENGTH_LONG).show();
+
+                        ed_username.setText("");
+                        ed_password.setText("");
+                    }
+                    else{
+                        Toast.makeText(login.this, response, Toast.LENGTH_LONG).show();
                     }
                 }
             }, new Response.ErrorListener() {
                 @Override
                 public void onErrorResponse(VolleyError error) {
                     progressDialog.dismiss();
-                    Toast.makeText(login.this, error.getMessage().toString(), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(login.this, error.getMessage(), Toast.LENGTH_SHORT).show();
                 }
             }
             ){
                 @Override
                 protected Map<String, String> getParams() throws AuthFailureError {
                     Map<String,String> params = new HashMap<String, String>();
-                    params.put("category",str_category);
                     params.put("username",str_username);
                     params.put("password",str_password);
                     return params;
