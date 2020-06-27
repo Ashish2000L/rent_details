@@ -25,6 +25,7 @@ public class MainActivity extends AppCompatActivity {
 
     EditText ed_username,ed_email,ed_password;
     String str_name,str_username,str_password;
+    String category="admin";
     String url="http://rentdetails.000webhostapp.com/register.php";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,27 +64,38 @@ public class MainActivity extends AppCompatActivity {
             StringRequest request =new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
                 @Override
                 public void onResponse(String response) {
-                    progressDialog.dismiss();
-                    Toast.makeText(MainActivity.this, response, Toast.LENGTH_SHORT).show();
-                    ed_email.setText("");
-                    ed_username.setText("");
-                    ed_password.setText("");
+                    if(response.equalsIgnoreCase("registration successful"))
+                    {
+                        progressDialog.dismiss();
+                        Toast.makeText(MainActivity.this, response, Toast.LENGTH_LONG).show();
+                        ed_email.setText("");
+                        ed_username.setText("");
+                        ed_password.setText("");
+                    }else {
+                        progressDialog.dismiss();
+                        Toast.makeText(MainActivity.this, response, Toast.LENGTH_LONG).show();
+                    }
                 }
             }, new Response.ErrorListener() {
                 @Override
                 public void onErrorResponse(VolleyError error) {
                     progressDialog.dismiss();
-                    Toast.makeText(MainActivity.this, error.getMessage().toString(), Toast.LENGTH_SHORT).show();
-                }
+                    if(error.getMessage()!=null){
+                    Toast.makeText(MainActivity.this, error.getMessage(), Toast.LENGTH_LONG).show();
+                }else{
+                        Toast.makeText(MainActivity.this, "error error", Toast.LENGTH_SHORT).show();
+                    }
+            }
             }
             ){
                 @Override
                 protected Map<String, String> getParams() throws AuthFailureError {
                     Map<String,String> params = new HashMap<String, String>();
 
-                    params.put("name",str_name);
+                    params.put("Name",str_name);
                     params.put("username",str_username);
                     params.put("password",str_password);
+                    params.put("category",category);
                     return params;
                 }
             };
