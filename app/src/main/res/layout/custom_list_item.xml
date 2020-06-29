@@ -2,7 +2,9 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="horizontal" android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:padding="5dp">
+    android:padding="5dp"
+    android:background="@drawable/gradient"
+    android:id="@+id/linearlayout">
 
     <TextView
         android:id="@+id/txt_id"
@@ -12,9 +14,9 @@
         android:text="1"
         android:textColor="@android:color/background_light"
         android:textSize="20sp"
-        android:background="@drawable/circle"/>
+        android:background="@drawable/circle" />
     <TextView
-        android:layout_width="70dp"
+        android:layout_width="150dp"
         android:layout_height="40dp"
         android:gravity="center|center_vertical"
         android:id="@+id/txt_date"
@@ -22,9 +24,10 @@
         android:text="1/4/20"
         android:layout_marginLeft="5dp"
         style="@style/TextAppearance.AppCompat.Large"
+        android:textColor="@color/cardview_light_background"
         />
     <TextView
-        android:layout_width="70dp"
+        android:layout_width="150dp"
         android:layout_height="40dp"
         android:gravity="center|center_vertical"
         android:id="@+id/txt_amount"
@@ -32,35 +35,5 @@
         android:text="6500"
         android:layout_marginLeft="5dp"
         style="@style/TextAppearance.AppCompat.Large"
-        />
-    <TextView
-        android:layout_width="70dp"
-        android:layout_height="40dp"
-        android:gravity="center|center_vertical"
-        android:id="@+id/txt_units"
-        android:textSize="20sp"
-        android:text="15000"
-        android:layout_marginLeft="5dp"
-        style="@style/TextAppearance.AppCompat.Large"
-        />
-    <TextView
-        android:layout_width="50dp"
-        android:layout_height="40dp"
-        android:gravity="center|center_vertical"
-        android:id="@+id/txt_rent"
-        android:textSize="20sp"
-        android:text="paid"
-        android:layout_marginLeft="5dp"
-        style="@style/TextAppearance.AppCompat.Large"
-        />
-    <TextView
-        android:layout_width="50dp"
-        android:layout_height="40dp"
-        android:gravity="center|center_vertical"
-        android:id="@+id/txt_bill"
-        android:textSize="20sp"
-        android:text="paid"
-        android:layout_marginLeft="5dp"
-        style="@style/TextAppearance.AppCompat.Large"
-        />
+        android:textColor="@color/cardview_light_background"/>
 </LinearLayout>

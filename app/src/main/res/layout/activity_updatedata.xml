@@ -1,9 +1,146 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="10dp"
     tools:context=".updatedata">
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        style="@style/TextAppearance.AppCompat.Widget.ActionBar.Title"
+        android:text="date"
+        android:id="@+id/date_tv"
+        android:gravity="center_horizontal"
+        android:textSize="30sp"
+        android:layout_marginBottom="20dp"
+        android:background="@drawable/circle"
+        android:textColor="@color/cardview_light_background"
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+        />
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Amount: Rs"
+            android:textSize="25sp"
+            style="@style/TextAppearance.AppCompat.Widget.ActionBar.Title"
+            />
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/amountss"
+        android:textSize="25sp"
+        android:layout_marginBottom="10dp"
+        android:gravity="center_horizontal"
+        />
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Units:"
+            android:textSize="25sp"
+            style="@style/TextAppearance.AppCompat.Widget.ActionBar.Title"
+            />
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/unitss"
+        android:textSize="25sp"
+        android:layout_marginBottom="10dp"
+        android:gravity="center_horizontal"
+        />
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Rent:"
+            android:textSize="25sp"
+            style="@style/TextAppearance.AppCompat.Widget.ActionBar.Title"
+            />
+        <RadioGroup
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_horizontal"
+            android:id="@+id/radio_grp_rent">
+            <RadioButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/radio_paid"
+                android:text="Paid"
+                android:textSize="25dp"
+                android:onClick="radio_rent"
+                android:layout_marginLeft="20dp"/>
+            <RadioButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/radio_unpaid"
+                android:text="Unpaid"
+                android:textSize="25dp"
+                android:onClick="radio_rent"
+                android:layout_marginLeft="30dp"/>
+        </RadioGroup>
+
+
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="10dp">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Bill:   "
+            android:textSize="25sp"
+            style="@style/TextAppearance.AppCompat.Widget.ActionBar.Title"
+            />
+        <RadioGroup
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_horizontal"
+            android:id="@+id/radio_grp_bill">
+            <RadioButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/radio_paid_bill"
+                android:text="Paid"
+                android:textSize="25dp"
+                android:onClick="radio_bill"
+                android:layout_marginLeft="20dp"/>
+            <RadioButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/radio_unpaid_bill"
+                android:text="Unpaid"
+                android:textSize="25dp"
+                android:onClick="radio_bill"
+                android:layout_marginLeft="30dp"/>
+        </RadioGroup>
+    </LinearLayout>
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/colorPrimary"
+        android:text="Update Data"
+        android:textSize="25sp"
+        android:textColor="@color/cardview_light_background"
+        android:onClick="update_data"
+        android:id="@+id/btn_update"
+        android:layout_marginTop="30dp"/>
+</LinearLayout>
