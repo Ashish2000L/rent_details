@@ -97,7 +97,7 @@
             android:textColor="@android:color/white"
             android:textSize="20dp"
             android:layout_marginTop="32dp"
-            android:onClick="Login"
+
             android:padding="15dp"
             android:text="Login"
             />

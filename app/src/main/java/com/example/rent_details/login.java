@@ -1,11 +1,14 @@
 package com.example.rent_details;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -19,12 +22,17 @@ import com.android.volley.toolbox.Volley;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 public class login extends AppCompatActivity {
 
     EditText ed_username,ed_password;
     String str_category,str_username,str_password;
-    String url="http://rentdetails.000webhostapp.com/login.php";
+    String url="https://rentdetails.000webhostapp.com/login.php";
+    public static final  String shared_pref="shared_prefs";
+    public static  final String user="username";
+    public static final String pass="password";
+    Button btnlogin;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,9 +41,29 @@ public class login extends AppCompatActivity {
 
         ed_username = findViewById(R.id.ed_username);
         ed_password = findViewById(R.id.ed_passwords);
+        btnlogin= findViewById(R.id.btn_login);
+
+        SharedPreferences sharedPreferences = getSharedPreferences(shared_pref,MODE_PRIVATE);
+        ed_username.setText(sharedPreferences.getString(user, ""));
+        ed_password.setText(sharedPreferences.getString(pass, ""));
+        btnlogin.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Login();
+            }
+        });
     }
 
-    public void Login(View view) {
+    public void shared_prefs(){
+
+        SharedPreferences sharedPreferences = getSharedPreferences(shared_pref,MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString(user,str_username);
+        editor.putString(pass,str_password);
+        editor.apply();
+    }
+
+    public void Login() {
 
         final ProgressDialog progressDialog = new ProgressDialog( this);
         progressDialog.setMessage("Please wait...");
@@ -62,6 +90,9 @@ public class login extends AppCompatActivity {
 
                         ed_username.setText("");
                         ed_password.setText("");
+                        shared_prefs();
+                        startActivity(new Intent(getApplicationContext(),ListOfRentersForAdmin.class).putExtra("username",str_username));
+                        finish();
 
                     }else if(response.equalsIgnoreCase("renter")){
                         Toast.makeText(login.this, response, Toast.LENGTH_LONG).show();
@@ -98,7 +129,7 @@ public class login extends AppCompatActivity {
     }
 
     public void moveToRegistration(View view) {
-        startActivity(new Intent(getApplicationContext(),MainActivity.class));
+        startActivity(new Intent(getApplicationContext(), register.class));
         finish();
     }
 }
