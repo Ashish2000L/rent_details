@@ -2,9 +2,9 @@ package com.example.rent_details;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.app.DownloadManager;
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
@@ -21,21 +21,34 @@ import com.android.volley.toolbox.Volley;
 import java.util.HashMap;
 import java.util.Map;
 
-public class MainActivity extends AppCompatActivity {
+public class register extends AppCompatActivity {
 
     EditText ed_username,ed_email,ed_password;
     String str_name,str_username,str_password;
     String category="admin";
-    String url="http://rentdetails.000webhostapp.com/register.php";
+    String url="https://rentdetails.000webhostapp.com/register.php";
+    public static final  String shared_pref="shared_prefs";
+    public static  final String user="username";
+    public static final String pass="password";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_register);
         ed_email = findViewById(R.id.ed_email);
         ed_username = findViewById(R.id.ed_username);
         ed_password = findViewById(R.id.ed_password);
-
     }
+
+    private void pref(){
+
+        SharedPreferences preferences =getSharedPreferences(shared_pref,MODE_PRIVATE);
+        SharedPreferences.Editor editor =preferences.edit();
+        editor.putString(user,str_username);
+        editor.putString(pass,str_password);
+        editor.apply();
+    }
+
 
     public void moveToLogin(View view) {
         startActivity(new Intent(this,login.class));
@@ -67,13 +80,14 @@ public class MainActivity extends AppCompatActivity {
                     if(response.equalsIgnoreCase("registration successful"))
                     {
                         progressDialog.dismiss();
-                        Toast.makeText(MainActivity.this, response, Toast.LENGTH_LONG).show();
+                        Toast.makeText(register.this, response, Toast.LENGTH_LONG).show();
                         ed_email.setText("");
                         ed_username.setText("");
                         ed_password.setText("");
+                        pref();
                     }else {
                         progressDialog.dismiss();
-                        Toast.makeText(MainActivity.this, response, Toast.LENGTH_LONG).show();
+                        Toast.makeText(register.this, response, Toast.LENGTH_LONG).show();
                     }
                 }
             }, new Response.ErrorListener() {
@@ -81,9 +95,9 @@ public class MainActivity extends AppCompatActivity {
                 public void onErrorResponse(VolleyError error) {
                     progressDialog.dismiss();
                     if(error.getMessage()!=null){
-                    Toast.makeText(MainActivity.this, error.getMessage(), Toast.LENGTH_LONG).show();
+                    Toast.makeText(register.this, error.getMessage(), Toast.LENGTH_LONG).show();
                 }else{
-                        Toast.makeText(MainActivity.this, "error error", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(register.this, "error error", Toast.LENGTH_SHORT).show();
                     }
             }
             }
@@ -100,7 +114,7 @@ public class MainActivity extends AppCompatActivity {
                 }
             };
 
-            RequestQueue requestQueue = Volley.newRequestQueue(MainActivity.this);
+            RequestQueue requestQueue = Volley.newRequestQueue(register.this);
 
             requestQueue.add(request);
         }
