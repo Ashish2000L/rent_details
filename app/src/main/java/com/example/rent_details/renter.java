@@ -1,21 +1,34 @@
 package com.example.rent_details;
 
+import com.android.volley.toolbox.StringRequest;
+
 public class renter {
 
-    private String date,amount,unit, rent,bill;
+    private String date,amount,unit,rent,bill,addedon,lastupdate;
+    private int id ;
 
     public renter() {
 
     }
 
-    public renter(String date, String amount, String unit, String rent, String bill) {
+    public renter(int id, String date, String amount, String unit, String rent, String bill, String addedon, String lastupdate) {
+        this.id=id;
         this.date = date;
         this.amount = amount;
         this.unit = unit;
         this.rent = rent;
         this.bill = bill;
+        this.addedon = addedon;
+        this.lastupdate = lastupdate;
     }
 
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
     public String getDate() {
         return date;
     }
@@ -54,5 +67,21 @@ public class renter {
 
     public void setBill(String bill) {
         this.bill = bill;
+    }
+
+    public String getAddedon() {
+        return addedon;
+    }
+
+    public void setAddedon(String addedon) {
+        this.addedon = addedon;
+    }
+
+    public String getLastupdate() {
+        return lastupdate;
+    }
+
+    public void setLastupdate(String lastupdate) {
+        this.lastupdate = lastupdate;
     }
 }

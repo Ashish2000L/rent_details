@@ -1,14 +1,21 @@
 package com.example.rent_details;
 
 import android.content.Context;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.ColorFilter;
+import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+
+import org.w3c.dom.Text;
 
 import java.util.List;
 
@@ -29,20 +36,25 @@ public class myadapter extends ArrayAdapter<renter> {
     public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
 
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.custom_list_item,null,true);
-        //TextView tv_id = view.findViewById(R.id.txt_id);
+        LinearLayout linearLayout = view.findViewById(R.id.linearlayout);
         TextView tv_date=view.findViewById(R.id.txt_date);
         TextView tv_amount = view.findViewById(R.id.txt_amount);
-        TextView tv_units = view.findViewById(R.id.txt_units);
-        TextView tv_rent = view.findViewById(R.id.txt_rent);
-        TextView tv_bill = view.findViewById(R.id.txt_bill);
+
 
         tv_date.setText(arraylistrenter.get(position).getDate());
         tv_amount.setText(arraylistrenter.get(position).getAmount());
-        tv_units.setText(arraylistrenter.get(position).getUnit());
-        tv_rent.setText(arraylistrenter.get(position).getRent());
-        tv_bill.setText(arraylistrenter.get(position).getBill());
 
-
+        if(arraylistrenter.get(position).getRent().equals("Paid"))
+        {
+            if(arraylistrenter.get(position).getBill().equals("Paid"))
+            {
+                linearLayout.setBackgroundResource(R.drawable.gradient);
+            }else{
+                linearLayout.setBackgroundResource(R.drawable.gradient1);
+            }
+        }else{
+            linearLayout.setBackgroundResource(R.drawable.gradient1);
+        }
 
         return view;
     }
