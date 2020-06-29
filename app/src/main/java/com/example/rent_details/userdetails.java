@@ -124,7 +124,7 @@ public class userdetails extends AppCompatActivity {
 
                     params.put("date",name);
                     params.put("amount",email);
-                    params.put("units",contact);
+                    params.put("fifo",contact);
                     params.put("rent",address);
                     params.put("bill",bill);
 

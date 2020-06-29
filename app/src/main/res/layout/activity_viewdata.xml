@@ -13,11 +13,23 @@
         android:layout_height="wrap_content"
         android:id="@+id/text_date"
         android:text="1/04/2020"
-        style="@style/TextAppearance.AppCompat.Large"
+       style="@style/TextAppearance.AppCompat.Widget.ActionBar.Title"
+        android:background="@drawable/circle"
+        android:textColor="@color/cardview_light_background"
         android:textSize="25sp"
         android:layout_marginBottom="10dp"
         android:gravity="center_horizontal|center_vertical|center"
         />
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="10dp">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="25sp"
+            android:text="Amount : "/>
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -25,7 +37,19 @@
         android:text="Amount: "
         android:textSize="25sp"
         android:layout_marginBottom="10dp"
+        android:gravity="center_horizontal"
         />
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="10dp">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Units : "
+            android:textSize="25sp"/>
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -33,24 +57,102 @@
         android:text="Units: "
         android:textSize="25sp"
         android:layout_marginBottom="10dp"
+        android:gravity="center_horizontal"
         />
-    <TextView
+    </LinearLayout>
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/text_rent"
-        android:text="Rent: "
-        android:textSize="25sp"
-        android:layout_marginBottom="10dp"
-        />
-    <TextView
+        android:orientation="horizontal"
+        android:layout_marginTop="10dp">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Rent : "
+            android:textSize="25sp"/>
+   <ImageView
+       android:layout_width="50dp"
+       android:layout_height="50dp"
+       android:src="@drawable/unpaid"
+       android:id="@+id/img_unpaid"
+       android:layout_marginLeft="30dp"
+       android:layout_gravity="center|center_horizontal|center_vertical"
+       android:visibility="gone"
+       />
+        <ImageView
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:src="@drawable/ic_check_black_24dp"
+            android:layout_marginLeft="30dp"
+            android:id="@+id/img_paid"
+            android:layout_gravity="center|center_vertical|center_horizontal"
+            android:visibility="gone"
+            />
+    </LinearLayout>
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/text_bill"
-        android:text="Bill: "
-        android:textSize="25sp"
-        android:layout_marginBottom="10dp"
+        android:orientation="horizontal"
+        android:layout_marginTop="20dp">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Bill : "
+            android:textSize="25sp"/>
+    <ImageView
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:src="@drawable/unpaid"
+        android:id="@+id/img_unpaid_bill"
+        android:layout_marginLeft="30dp"
+        android:layout_gravity="center|center_horizontal|center_vertical"
+        android:visibility="gone"
         />
-
-
-
+    <ImageView
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:src="@drawable/ic_check_black_24dp"
+        android:layout_marginLeft="30dp"
+        android:id="@+id/img_paid_bill"
+        android:layout_gravity="center|center_vertical|center_horizontal"
+        android:visibility="gone"
+        />
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="20dp">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Added On: "
+            android:textSize="25sp"/>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="25sp"
+            android:text="date"
+            android:gravity="center"
+            android:id="@+id/useraddeddate"/>
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="20dp">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Last Updated: "
+            android:textSize="25sp"
+            />
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="25sp"
+            android:text="Update date"
+            android:gravity="center"
+            android:id="@+id/lastupdate"/>
+    </LinearLayout>
 </LinearLayout>
