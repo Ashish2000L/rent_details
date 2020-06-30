@@ -1,6 +1,8 @@
 package com.example.rent_details;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.app.AlertDialog;
 import android.app.DownloadManager;
@@ -8,6 +10,9 @@ import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
@@ -38,9 +43,10 @@ public class ListOfRentersForAdmin extends AppCompatActivity {
     ArrayList<ListOfRenters> listOfRentersArrayList = new ArrayList<>();
     TextView details_of_server;
     ListOfRenters listOfRenters;
-    String byadmin = "final";
+    String byadmin,welcomemsg;
     String url="https://rentdetails.000webhostapp.com/ListOfRenterRetrive.php";
     ProgressDialog progressDialog;
+    SwipeRefreshLayout swipeRefreshLayout;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -49,7 +55,7 @@ public class ListOfRentersForAdmin extends AppCompatActivity {
         Intent intent =getIntent();
         byadmin = intent.getStringExtra("username");
         listView = findViewById(R.id.listofrenters_listview);
-        details_of_server = findViewById(R.id.tv_status_of_renter);
+        swipeRefreshLayout = findViewById(R.id.listofrenters);
         listOfRenterAdapter=new ListOfRenterAdapter(this,listOfRentersArrayList);
 
         listView.setAdapter(listOfRenterAdapter);
@@ -61,7 +67,7 @@ public class ListOfRentersForAdmin extends AppCompatActivity {
                 AlertDialog.Builder builder =new AlertDialog.Builder(view.getContext());
                 ProgressDialog progressDialog = new ProgressDialog(view.getContext());
 
-                CharSequence[] dialogitem ={"View Data","Edit Data","Delete Data"};
+                CharSequence[] dialogitem ={"View Data","Delete Data"};
 
                 builder.setTitle(listOfRentersArrayList.get(position).getName());
 
@@ -71,11 +77,10 @@ public class ListOfRentersForAdmin extends AppCompatActivity {
                         switch (which){
                             case 0: Intent intent1 = new Intent(getApplicationContext(),showdetails.class);
                                         intent1.putExtra("username",listOfRentersArrayList.get(position).getUsername());
+                                        intent1.putExtra("category",0);
                                         startActivity(intent1);
                                 break;
-                            case 1:
-                                break;
-                            case 2: DeleteUserAndData(listOfRentersArrayList.get(position).getUsername());
+                            case 1: DeleteUserAndData(listOfRentersArrayList.get(position).getUsername());
                                 break;
 
                         }
@@ -86,9 +91,40 @@ public class ListOfRentersForAdmin extends AppCompatActivity {
             }
         });
 
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                retrive_list_of_renters();
+                swipeRefreshLayout.setRefreshing(false);
+            }
+        });
+
         retrive_list_of_renters();
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater =getMenuInflater();
+        inflater.inflate(R.menu.listofrenteradminmenu, menu);
+        return  true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+
+        if(item.getItemId()==R.id.adminsettings)
+        {
+            startActivity(new Intent(getApplicationContext(),details_all.class)
+            .putExtra("category",0)
+            .putExtra("username",byadmin)
+            .putExtra("isadmin",true));
+        }else if(item.getItemId() == R.id.newrenter)
+        {
+
+        }
+
+        return true;
+    }
 
     public void retrive_list_of_renters()
     {   progressDialog = new ProgressDialog(this);
@@ -120,9 +156,12 @@ public class ListOfRentersForAdmin extends AppCompatActivity {
                                 String name = object.getString("name");
                                 String usernames = object.getString("username");
                                 String date_of_joining = object.getString("joiningdate");
+                                String password = object.getString("password");
+                                String category = object.getString("category");
+                                String lastupdated = object.getString("lastupdate");
 
                                 Toast.makeText(ListOfRentersForAdmin.this, usernames, Toast.LENGTH_LONG).show();
-                                listOfRenters = new ListOfRenters(name, usernames, date_of_joining);
+                                listOfRenters = new ListOfRenters(name, usernames, date_of_joining,lastupdated,password,category);
                                 listOfRentersArrayList.add(listOfRenters);
                                 listOfRenterAdapter.notifyDataSetChanged();
                             }

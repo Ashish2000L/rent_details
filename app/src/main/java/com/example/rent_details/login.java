@@ -91,7 +91,8 @@ public class login extends AppCompatActivity {
                         ed_username.setText("");
                         ed_password.setText("");
                         shared_prefs();
-                        startActivity(new Intent(getApplicationContext(),ListOfRentersForAdmin.class).putExtra("username",str_username));
+                        startActivity(new Intent(getApplicationContext(),ListOfRentersForAdmin.class)
+                                .putExtra("username",str_username));
                         finish();
 
                     }else if(response.equalsIgnoreCase("renter")){
@@ -99,6 +100,10 @@ public class login extends AppCompatActivity {
 
                         ed_username.setText("");
                         ed_password.setText("");
+                        shared_prefs();
+                        startActivity(new Intent(login.this,showdetails.class)
+                        .putExtra("username",str_username)
+                        .putExtra("category",1));
                     }
                     else{
                         Toast.makeText(login.this, response, Toast.LENGTH_LONG).show();

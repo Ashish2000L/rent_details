@@ -1,18 +1,18 @@
 package com.example.rent_details;
 
-import com.android.volley.toolbox.StringRequest;
+
 
 public class renter {
 
     private String date,amount,unit,rent,bill,addedon,lastupdate;
-    private int id ;
+
 
     public renter() {
 
     }
 
-    public renter(int id, String date, String amount, String unit, String rent, String bill, String addedon, String lastupdate) {
-        this.id=id;
+    public renter( String date, String amount, String unit, String rent, String bill, String addedon, String lastupdate) {
+
         this.date = date;
         this.amount = amount;
         this.unit = unit;
@@ -22,13 +22,6 @@ public class renter {
         this.lastupdate = lastupdate;
     }
 
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
     public String getDate() {
         return date;
     }

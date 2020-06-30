@@ -2,13 +2,15 @@ package com.example.rent_details;
 
 public class ListOfRenters {
 
-    private String name,username,date;
+    private String name,username,date,password,lastupdate,category;
 
-
-    public ListOfRenters(String name, String username,String date) {
+    public ListOfRenters(String name, String username, String date, String lastupdate, String password, String category) {
         this.name = name;
         this.username = username;
         this.date = date;
+        this.password = password;
+        this.lastupdate = lastupdate;
+        this.category = category;
     }
 
     public String getUsername() {
@@ -33,6 +35,29 @@ public class ListOfRenters {
 
     public void setDate(String date) {
         this.date = date;
+    }
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public String getLastupdate() {
+        return lastupdate;
+    }
+
+    public void setLastupdate(String lastupdate) {
+        this.lastupdate = lastupdate;
+    }
+
+    public String getCategory() {
+        return category;
+    }
+
+    public void setCategory(String category) {
+        this.category = category;
     }
 
 

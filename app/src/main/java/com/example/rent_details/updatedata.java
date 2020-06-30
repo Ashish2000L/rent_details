@@ -28,7 +28,7 @@ public class updatedata extends AppCompatActivity {
 
     RadioGroup radioGroup_bill,radioGroup_rent;
     RadioButton radioButton_rent,radioButton_bill;
-    String bill,rent,username,dates, lifo, fifo;
+    String bill,rent,username,dates, amounts, units;
     TextView date_tv;
     EditText amount, unit;
     private int position;
@@ -82,14 +82,14 @@ public class updatedata extends AppCompatActivity {
             Toast.makeText(this, "Amount cannot be empty", Toast.LENGTH_LONG).show();
         }else if(unit.getText().toString().trim().equals("")){
             Toast.makeText(this,"Unit cannot be empty",Toast.LENGTH_LONG).show();
-        }if(!radioButton_rent.isChecked()){
-            Toast.makeText(this, "Rent required", Toast.LENGTH_SHORT).show();
-        }else if(!radioButton_bill.isChecked()){
-            Toast.makeText(this, "Bill required", Toast.LENGTH_SHORT).show();
+        }if(rent.trim().isEmpty()){
+            Toast.makeText(this, "Rent status required", Toast.LENGTH_SHORT).show();
+        }else if(bill.trim().isEmpty()){
+            Toast.makeText(this, "Bill status required", Toast.LENGTH_SHORT).show();
         }else{
             progressDialog.show();
-            lifo = amount.getText().toString().trim();
-            fifo = unit.getText().toString();
+            amounts = amount.getText().toString().trim();
+            units = unit.getText().toString();
             StringRequest request = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
                 @Override
                 public void onResponse(String response) {
@@ -118,12 +118,12 @@ public class updatedata extends AppCompatActivity {
                 protected Map<String, String> getParams() throws AuthFailureError {
                     Map<String, String> params = new HashMap<String, String>();
 
-                    params.put("lifo",lifo);
+                    params.put("amounts", amounts);
                     params.put("rent",rent);
                     params.put("bill",bill);
                     params.put("date",dates);
                     params.put("username",username);
-                    params.put("fifo", fifo);
+                    params.put("units", units);
                     return params;
                 }
             };

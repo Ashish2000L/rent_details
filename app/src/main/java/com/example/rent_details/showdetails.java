@@ -1,5 +1,6 @@
 package com.example.rent_details;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
@@ -8,6 +9,9 @@ import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
@@ -28,6 +32,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 public class showdetails extends AppCompatActivity {
 
@@ -39,16 +44,21 @@ public class showdetails extends AppCompatActivity {
     String st_username;
     ProgressDialog progressDialog;
     SwipeRefreshLayout swipeRefreshLayout;
+    ListOfRentersForAdmin listOfRentersForAdmin;
+    private int category;
+   // boolean flag=false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_showdetails);
 
-        listView=findViewById(R.id.listview);
-
+        listView=findViewById(R.id.listviews);
+        swipeRefreshLayout = findViewById(R.id.swipref);
         Intent intent = getIntent();
-        st_username = intent.getStringExtra("username");
+        st_username = intent.getExtras().getString("username");
+        //Objects.requireNonNull(getSupportActionBar()).setTitle(st_username);
+        category = intent.getExtras().getInt("category");
         myadapter = new myadapter(this,renterArrayList);
         listView.setAdapter(myadapter);
 
@@ -56,21 +66,17 @@ public class showdetails extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, final int position, long id) {
                 AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
-                ProgressDialog progressDialog = new ProgressDialog(view.getContext());
 
-                CharSequence[] dialogitem={"view data","edit data","delete data"};
+                CharSequence[] dialogitem={"View Data","Edit Data","Delete Data"};
 
                 builder.setTitle(renterArrayList.get(position).getDate());
                 builder.setItems(dialogitem, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int i) {
-
-
                         switch(i){
                             case 0:
                                 startActivity(new Intent(getApplicationContext(),viewdata.class).putExtra(
-                                        "position",position
-                                ));
+                                        "position",position));
                                 break;
                             case 1: startActivity(new Intent(getApplicationContext(),updatedata.class)
                             .putExtra("position",position)
@@ -88,14 +94,64 @@ public class showdetails extends AppCompatActivity {
             }
         });
 
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                retrivedata();
+                swipeRefreshLayout.setRefreshing(false);
+            }
+        });
+
         retrivedata();
     }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        if(category==0) {
+            MenuInflater inflater =getMenuInflater();
+            inflater.inflate(R.menu.toolbar, menu);
+        }else if(category==1){
+            MenuInflater inflater =getMenuInflater();
+            inflater.inflate(R.menu.details_renter, menu);
+        }
+        return  true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+
+
+            switch (item.getItemId()) {
+                case R.id.insert:
+                    startActivity(new Intent(getApplicationContext(), userdetails.class)
+                            .putExtra("username", st_username));
+                    break;
+                case R.id.renter_detail:
+                    startActivity(new Intent(getApplicationContext(), details_all.class)
+                    .putExtra("category",0)
+                    .putExtra("username",st_username));
+                    break;
+                case R.id.renter_setting:
+                    startActivity(new Intent(getApplicationContext(), details_all.class)
+                            .putExtra("category",1)
+                            .putExtra("username",st_username));
+                    break;
+                case R.id.due_bills:
+                    break;
+            }
+
+        return true;
+        //return super.onOptionsItemSelected(item);
+    }
+
     public void retrivedata()
-    {   progressDialog =new ProgressDialog(this);
+    {
+       progressDialog =new ProgressDialog(showdetails.this);
     progressDialog.setCancelable(false);
     progressDialog.setMessage("Retriving users data");
     progressDialog.show();
 
+        listView.setVisibility(View.VISIBLE);
         StringRequest request = new StringRequest(Request.Method.POST, url,
                 new Response.Listener<String>() {
                     @Override
@@ -114,15 +170,16 @@ public class showdetails extends AppCompatActivity {
                                     JSONObject object = jsonArray.getJSONObject(i);
                                     String date=object.getString("date");
                                     String amount=object.getString("amount");
-                                    String units=object.getString("fifo");
+                                    String units=object.getString("units");
                                     String rent=object.getString("rent");
                                     String bill=object.getString("bill");
                                     String addedon = object.getString("addedon");
                                     String lastupdate = object.getString("lastupdate");
 
-                                    renter = new renter(i+1,date,amount,units,rent,bill,addedon,lastupdate);
+                                    renter = new renter(date,amount,units,rent,bill,addedon,lastupdate);
                                     renterArrayList.add(renter);
                                     myadapter.notifyDataSetChanged();
+                                    Toast.makeText(showdetails.this, lastupdate, Toast.LENGTH_SHORT).show();
 
                                 }
                             }
@@ -130,6 +187,7 @@ public class showdetails extends AppCompatActivity {
                         }catch (JSONException e)
                         {
                             e.printStackTrace();
+                            Toast.makeText(showdetails.this, e.getMessage(), Toast.LENGTH_LONG).show();
                         }
                         progressDialog.dismiss();
                     }
@@ -147,7 +205,7 @@ public class showdetails extends AppCompatActivity {
                 params.put("username",st_username);
                 return params;
             }
-        };;
+        };
 
         RequestQueue requestQueue = Volley.newRequestQueue(this);
         requestQueue.add(request);
