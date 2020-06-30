@@ -5,19 +5,14 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".ListOfRentersForAdmin">
-
+<androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:id="@+id/listofrenters">
     <ListView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:id="@+id/listofrenters_listview"
         />
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:id="@+id/tv_status_of_renter"
-        android:text="No Renter Found..."
-        android:gravity="center_vertical|center|center_horizontal"
-        android:textSize="30sp"
-        android:visibility="gone"/>
-
+</androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 </RelativeLayout>

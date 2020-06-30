@@ -18,7 +18,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textSize="20sp"
-        android:hint="Date:"
+        android:hint="Date"
         android:id="@+id/edtName"
         android:layout_marginTop="20dp"
         android:inputType="textPersonName"
@@ -27,7 +27,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textSize="20sp"
-        android:hint="Amount:"
+        android:hint="Amount"
         android:id="@+id/edtEmail"
         android:layout_marginTop="10dp"
         android:inputType="textEmailAddress"
@@ -41,24 +41,79 @@
         android:layout_marginTop="10dp"
         android:inputType="phone"
         />
-    <EditText
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textSize="20sp"
-        android:hint="rent-paid/not-paid"
-        android:id="@+id/edtAddress"
-        android:layout_marginTop="10dp"
-        android:inputType="text"
-        />
-    <EditText
+        android:orientation="horizontal">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Rent:"
+            android:textSize="25sp"
+            style="@style/TextAppearance.AppCompat.Widget.ActionBar.Title"
+            />
+        <RadioGroup
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_horizontal"
+            android:id="@+id/radio_grp_rent_details">
+            <RadioButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/radio_paid_details"
+                android:text="Paid"
+                android:textSize="25dp"
+                android:onClick="radio_rent"
+                android:layout_marginLeft="20dp"/>
+            <RadioButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/radio_unpaid_details"
+                android:text="Unpaid"
+                android:textSize="25dp"
+                android:onClick="radio_rent"
+                android:layout_marginLeft="30dp"/>
+        </RadioGroup>
+
+
+    </LinearLayout>
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textSize="20sp"
-        android:hint="units-paid/not-paid"
-        android:id="@+id/edtbill"
-        android:layout_marginTop="10dp"
-        android:inputType="text"
-        />
+        android:orientation="horizontal"
+        android:layout_marginTop="10dp">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Bill:   "
+            android:textSize="25sp"
+            style="@style/TextAppearance.AppCompat.Widget.ActionBar.Title"
+            />
+        <RadioGroup
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_horizontal"
+            android:id="@+id/radio_grp_bill_details">
+            <RadioButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/radio_paid_bill_details"
+                android:text="Paid"
+                android:textSize="25dp"
+                android:onClick="radio_bill"
+                android:layout_marginLeft="20dp"/>
+            <RadioButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/radio_unpaid_bill_details"
+                android:text="Unpaid"
+                android:textSize="25dp"
+                android:onClick="radio_bill"
+                android:layout_marginLeft="30dp"/>
+        </RadioGroup>
+    </LinearLayout>
     <Button
         android:id="@+id/btnInsert"
         android:layout_width="match_parent"
