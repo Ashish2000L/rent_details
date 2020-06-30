@@ -13,13 +13,31 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
-        <activity android:name=".ListOfRentersForAdmin"></activity>
-        <activity android:name=".updatedata" />
-        <activity android:name=".viewdata" />
-        <activity android:name=".showdetails" />
-        <activity android:name=".userdetails" />
-        <activity android:name=".login" />
-        <activity android:name=".register">
+        <activity android:name=".new_renter"></activity>
+        <activity
+            android:name=".details_all"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ListOfRentersForAdmin"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".updatedata"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".viewdata"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".showdetails"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".userdetails"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".register"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".login"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
