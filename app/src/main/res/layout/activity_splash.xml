@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".splash">
+
+    <com.airbnb.lottie.LottieAnimationView
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:layout_centerInParent="true"
+        app:lottie_fileName="house.json"
+        app:lottie_loop="false"
+        app:lottie_autoPlay="false"
+        android:id="@+id/house"
+        android:scaleType="centerCrop"
+        />
+    <com.airbnb.lottie.LottieAnimationView
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        app:lottie_fileName="loading.json"
+        app:lottie_loop="true"
+        app:lottie_autoPlay="true"
+        android:id="@+id/loading"
+        android:layout_below="@+id/house"
+        android:layout_marginTop="50dp"
+        />
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/loading"
+        android:text="Status"
+        android:textAlignment="center"
+        android:textSize="20sp"
+        android:layout_marginTop="10dp"
+        android:id="@+id/status"
+        />
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/version"
+        android:layout_alignParentBottom="true"
+        android:text="version"
+        android:textSize="25sp"
+        android:layout_marginBottom="10dp"
+        android:textAlignment="center"
+        style="@style/TextAppearance.AppCompat.Large"/>
+
+
+</RelativeLayout>
