@@ -5,11 +5,28 @@
     <item
         android:title="New Renter"
         android:id="@+id/newrenter"
-        app:showAsAction="never"/>
+        app:showAsAction="always"
+        android:icon="@drawable/add"/>
 
     <item
-        android:title="settings"
+        android:title="Profile"
         android:id="@+id/adminsettings"
         android:icon="@drawable/settings"
         app:showAsAction="never"/>
+    <item
+        android:title="Help"
+        android:id="@+id/help"
+        app:showAsAction="never">
+        <menu>
+            <item
+                android:title="Report Bug"
+                android:id="@+id/reportbug"
+                app:showAsAction="never"/>
+            <item
+                android:title="FAQ"
+                android:id="@+id/faq"
+                app:showAsAction="never"/>
+
+        </menu>
+    </item>
 </menu>

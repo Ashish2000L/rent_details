@@ -3,10 +3,13 @@
     <color name="colorPrimary">#008577</color>
     <color name="colorPrimaryDark">#00574B</color>
     <color name="colorAccent">#D81B60</color>
-    <color name="startcolor">#6AE2A0</color>
-    <color name="centercolor">#E418B660</color>
-    <color name="endcolor">#6AE2A0</color>
-    <color name="strtred">#EC5757</color>
-    <color name="endred">#EC5757</color>
+    <color name="startcolor">#06BD9F</color>
+    <color name="centercolor">#DC1D9677</color>
+    <color name="endcolor">#06BD9F</color>
+    <color name="strtred">#E63030</color>
+    <color name="endred">#E63030</color>
     <color name="centerred">#E6CA2121</color>
+    <color name="colorsame">#09D8BB</color>
+    <color name="center">#E153AF97</color>
+    <color name="end">#DDA1DDCC</color>
 </resources>

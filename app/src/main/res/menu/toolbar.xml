@@ -7,6 +7,6 @@
         app:showAsAction="never"/>
 
     <item android:id="@+id/renter_detail"
-        android:title="Renter Detail"
+        android:title="Renter Profile"
         app:showAsAction="never"/>
 </menu>
