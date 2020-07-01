@@ -41,7 +41,6 @@ public class myadapter extends ArrayAdapter<renter> {
         TextView tv_date=view.findViewById(R.id.txt_date);
         TextView tv_amount = view.findViewById(R.id.txt_amount);
 
-        Toast.makeText(context, "Data set complete", Toast.LENGTH_LONG).show();
         tv_date.setText(arraylistrenter.get(position).getDate());
         tv_amount.setText(arraylistrenter.get(position).getAmount());
 

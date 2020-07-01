@@ -86,8 +86,6 @@ public class login extends AppCompatActivity {
                     progressDialog.dismiss();
                     if(response.equalsIgnoreCase("admin")){
 
-                        Toast.makeText(login.this, response, Toast.LENGTH_LONG).show();
-
                         ed_username.setText("");
                         ed_password.setText("");
                         shared_prefs();
@@ -96,7 +94,6 @@ public class login extends AppCompatActivity {
                         finish();
 
                     }else if(response.equalsIgnoreCase("renter")){
-                        Toast.makeText(login.this, response, Toast.LENGTH_LONG).show();
 
                         ed_username.setText("");
                         ed_password.setText("");
@@ -104,6 +101,7 @@ public class login extends AppCompatActivity {
                         startActivity(new Intent(login.this,showdetails.class)
                         .putExtra("username",str_username)
                         .putExtra("category",1));
+                        finish();
                     }
                     else{
                         Toast.makeText(login.this, response, Toast.LENGTH_LONG).show();

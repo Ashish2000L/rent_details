@@ -19,133 +19,145 @@
         android:textSize="25sp"
         android:layout_marginBottom="10dp"
         android:gravity="center_horizontal|center_vertical|center"
+        android:padding="10dp"
         />
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:layout_marginTop="10dp">
+        android:layout_marginTop="20dp"
+        android:background="@drawable/textviewgradient">
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="25sp"
-            android:text="Amount : "/>
+            android:text="Amount : "
+            android:padding="5dp"
+            android:gravity="center"
+            android:textColor="#fff"/>
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/text_amount"
         android:text="Amount: "
         android:textSize="25sp"
-        android:layout_marginBottom="10dp"
-        android:gravity="center_horizontal"
+        android:gravity="center_horizontal|center"
+        android:textColor="#fff"
+        android:padding="5dp"
         />
     </LinearLayout>
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:layout_marginTop="10dp">
+        android:layout_marginTop="10dp"
+        android:background="@drawable/textviewgradient">
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Units : "
-            android:textSize="25sp"/>
+            android:textSize="25sp"
+            android:padding="5dp"
+            android:textColor="#fff"/>
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/text_units"
         android:text="Units: "
         android:textSize="25sp"
-        android:layout_marginBottom="10dp"
-        android:gravity="center_horizontal"
+        android:gravity="center_horizontal|center"
+        android:padding="5dp"
+        android:textColor="#fff"
         />
     </LinearLayout>
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:layout_marginTop="10dp">
+        android:layout_marginTop="10dp"
+        android:background="@drawable/textviewgradient">
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Rent : "
-            android:textSize="25sp"/>
-   <ImageView
-       android:layout_width="50dp"
-       android:layout_height="50dp"
-       android:src="@drawable/unpaid"
-       android:id="@+id/img_unpaid"
-       android:layout_marginLeft="30dp"
-       android:layout_gravity="center|center_horizontal|center_vertical"
-       android:visibility="gone"
-       />
-        <ImageView
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:src="@drawable/ic_check_black_24dp"
-            android:layout_marginLeft="30dp"
-            android:id="@+id/img_paid"
-            android:layout_gravity="center|center_vertical|center_horizontal"
-            android:visibility="gone"
+            android:text="Rent :  "
+            android:textSize="25sp"
+            android:padding="5dp"
+            android:gravity="center"
+            android:textColor="#fff"/>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="Paid"
+            android:id="@+id/rent"
+            android:textSize="25sp"
+            android:textColor="#fff"
+            android:padding="5dp"
+            />
+
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="10dp"
+        android:background="@drawable/textviewgradient">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Bill :     "
+            android:textSize="25sp"
+            android:padding="5dp"
+            android:gravity="center"
+            android:textColor="#fff"/>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="Paid"
+            android:id="@+id/bill"
+            android:textSize="25sp"
+            android:textColor="#fff"
+            android:padding="5dp"
             />
     </LinearLayout>
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:layout_marginTop="20dp">
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Bill : "
-            android:textSize="25sp"/>
-    <ImageView
-        android:layout_width="50dp"
-        android:layout_height="50dp"
-        android:src="@drawable/unpaid"
-        android:id="@+id/img_unpaid_bill"
-        android:layout_marginLeft="30dp"
-        android:layout_gravity="center|center_horizontal|center_vertical"
-        android:visibility="gone"
-        />
-    <ImageView
-        android:layout_width="50dp"
-        android:layout_height="50dp"
-        android:src="@drawable/ic_check_black_24dp"
-        android:layout_marginLeft="30dp"
-        android:id="@+id/img_paid_bill"
-        android:layout_gravity="center|center_vertical|center_horizontal"
-        android:visibility="gone"
-        />
-    </LinearLayout>
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_marginTop="20dp">
+        android:layout_marginTop="10dp"
+        android:padding="5dp"
+        android:background="@drawable/textviewgradient">
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Added On: "
-            android:textSize="25sp"/>
+            android:textSize="25sp"
+            android:gravity="center"
+            android:textColor="#fff"/>
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textSize="25sp"
             android:text="date"
             android:gravity="center"
-            android:id="@+id/useraddeddate"/>
+            android:id="@+id/useraddeddate"
+            android:textColor="#fff"/>
     </LinearLayout>
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:layout_marginTop="20dp">
+        android:layout_marginTop="10dp"
+        android:padding="5dp"
+        android:background="@drawable/textviewgradient">
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Last Updated: "
             android:textSize="25sp"
+            android:gravity="center"
+            android:textColor="#fff"
             />
         <TextView
             android:layout_width="match_parent"
@@ -153,6 +165,7 @@
             android:textSize="25sp"
             android:text="Update date"
             android:gravity="center"
-            android:id="@+id/lastupdate"/>
+            android:id="@+id/lastupdate"
+            android:textColor="#fff"/>
     </LinearLayout>
 </LinearLayout>

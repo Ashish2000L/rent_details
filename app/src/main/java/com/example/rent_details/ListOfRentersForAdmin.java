@@ -54,6 +54,11 @@ public class ListOfRentersForAdmin extends AppCompatActivity {
 
         Intent intent =getIntent();
         byadmin = intent.getStringExtra("username");
+
+        welcomemsg = "Welcome "+ byadmin;
+        getSupportActionBar().setTitle(welcomemsg);
+
+        Toast.makeText(this, "Welcome "+byadmin, Toast.LENGTH_SHORT).show();
         listView = findViewById(R.id.listofrenters_listview);
         swipeRefreshLayout = findViewById(R.id.listofrenters);
         listOfRenterAdapter=new ListOfRenterAdapter(this,listOfRentersArrayList);
@@ -120,7 +125,8 @@ public class ListOfRentersForAdmin extends AppCompatActivity {
             .putExtra("isadmin",true));
         }else if(item.getItemId() == R.id.newrenter)
         {
-
+            startActivity(new Intent(getApplicationContext(),new_renter.class)
+            .putExtra("username",byadmin));
         }
 
         return true;
@@ -150,7 +156,7 @@ public class ListOfRentersForAdmin extends AppCompatActivity {
                         String success = jsonObject.getString("success");
                         JSONArray jsonArray = jsonObject.getJSONArray("data");
                         if (success.equals("1")) {
-                            for (int i = 0; i < jsonArray.length(); i++) {
+                            for (int i = jsonArray.length()-1; i >=0; i--) {
                                 JSONObject object = jsonArray.getJSONObject(i);
 
                                 String name = object.getString("name");

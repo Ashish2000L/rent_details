@@ -6,7 +6,8 @@
     android:layout_height="match_parent"
     tools:context=".details_all"
     android:orientation="vertical"
-    android:padding="10dp">
+    android:padding="10dp"
+    android:background="@drawable/header">
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -14,25 +15,30 @@
         android:textSize="30sp"
         android:padding="5dp"
         android:gravity="center_vertical"
-        android:id="@+id/usernames" />
+        android:id="@+id/usernames"
+        android:textColor="#fff"
+        />
     <EditText
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textSize="25sp"
+        android:textSize="20sp"
+        android:hint="Name"
         android:padding="10dp"
         android:gravity="center_vertical"
         android:layout_marginTop="10dp"
         android:id="@+id/names"
+        android:textColor="#fff"
         android:enabled="false"/>
     <EditText
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="password"
-        android:textSize="25sp"
+        android:textSize="20sp"
         android:padding="10dp"
         android:gravity="center_vertical"
         android:layout_marginTop="10dp"
         android:inputType="textPassword"
+        android:textColor="#fff"
         android:id="@+id/passwords"
         android:enabled="false"/>
 
@@ -40,52 +46,71 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="Category"
-        android:textSize="25sp"
+        android:textSize="20sp"
         android:padding="10dp"
         android:gravity="center_vertical"
         android:layout_marginTop="10dp"
+        android:textColor="#fff"
         android:enabled="false"
         android:id="@+id/category"/>
+
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Phone Number"
+            android:textSize="20sp"
+            android:padding="10dp"
+            android:textColor="#fff"
+            android:gravity="center_vertical"
+            android:layout_marginTop="10dp"
+            android:enabled="false"
+            android:id="@+id/phone_number" />
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:layout_marginTop="10dp">
+        android:layout_marginTop="10dp"
+        android:padding="5dp">
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Joining Date: "
-            android:textSize="25sp"/>
+            android:textSize="20sp"
+            android:textColor="#fff"/>
     <EditText
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="Joining Date"
-        android:textSize="25sp"
+        android:textSize="20sp"
         android:padding="10dp"
         android:gravity="center_vertical"
         android:enabled="false"
         android:id="@+id/joiningdate"
+        android:textColor="#fff"
         />
     </LinearLayout>
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:layout_marginTop="10dp">
+        android:layout_marginTop="10dp"
+        android:padding="5dp">
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="25sp"
-            android:text="Last Update: "/>
+            android:textSize="20sp"
+            android:text="Last Update: "
+            android:textColor="#fff"/>
     <EditText
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textSize="25sp"
+        android:textSize="20sp"
         android:hint="Last update"
         android:padding="10dp"
         android:enabled="false"
         android:id="@+id/lastupdated"
+        android:textColor="#fff"
         />
     </LinearLayout>
 
@@ -101,5 +126,4 @@
         android:textColor="@color/cardview_light_background"
         android:onClick="updetail"
         />
-
 </LinearLayout>

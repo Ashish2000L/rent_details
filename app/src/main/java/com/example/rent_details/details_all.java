@@ -30,12 +30,12 @@ import java.util.Map;
 
 public class details_all extends AppCompatActivity {
 
-    EditText name,password,category,joiningdate,lastupdate;
+    EditText name,password,category,joiningdate,lastupdate,phonenumber;
     TextView username;
     private int id;
     private String usernames;
     ProgressDialog progressDialog;
-    String names,byadmin,pass,cat,join,update;
+    String names,byadmin,pass,cat,join,update,phone;
     Button updatedetail;
     boolean flag=false;
     @Override
@@ -57,6 +57,7 @@ public class details_all extends AppCompatActivity {
         lastupdate = findViewById(R.id.lastupdated);
         username = findViewById(R.id.usernames);
         updatedetail =findViewById(R.id.update_detail);
+        phonenumber = findViewById(R.id.phone_number);
 
         username.setText(usernames);
         fetch_user_data();
@@ -90,6 +91,7 @@ public class details_all extends AppCompatActivity {
                                     byadmin=object.getString("byadmin");
                                     join=object.getString("joiningdate");
                                     update = object.getString("lastupdate");
+                                    phone = object.getString("phonenumber");
                                     ///Toast.makeText(details_all.this, names, Toast.LENGTH_SHORT).show();
                                 }
                             }
@@ -102,9 +104,9 @@ public class details_all extends AppCompatActivity {
                         //Toast.makeText(details_all.this, names, Toast.LENGTH_SHORT).show();
                         progressDialog.dismiss();
                         if(id==0){
-                            showdatatoadmin(names,pass,join,update,cat);
+                            showdatatoadmin(names,pass,join,update,cat,phone);
                         }else{
-                            showdetailtoadmin(names,pass,join,update,cat);
+                            showdetailtorenter(names,pass,join,update,cat,phone);
                         }
                     }
                 }, new Response.ErrorListener() {
@@ -125,17 +127,18 @@ public class details_all extends AppCompatActivity {
         requestQueue.add(request);
     }
 
-    private void showdatatoadmin(String nam,String pa,String jone,String up,String ca)
+    private void showdatatoadmin(String nam,String pa,String jone,String up,String ca,String phn)
     {
         //Toast.makeText(this, "entered show data", Toast.LENGTH_SHORT).show();
         if(flag==false) {
-            Toast.makeText(this, nam, Toast.LENGTH_LONG).show();
+            Toast.makeText(this, phn, Toast.LENGTH_LONG).show();
 
             password.setText(pa);
             category.setText(ca);
             joiningdate.setText(jone);
             lastupdate.setText(up);
             name.setText(nam);
+            phonenumber.setText(phn);
             updatedetail.setVisibility(View.GONE);
         }else if(flag==true){
             password.setText(pass);
@@ -145,25 +148,30 @@ public class details_all extends AppCompatActivity {
             joiningdate.setText(join);
             lastupdate.setText(update);
             name.setText(names);
+            phonenumber.setText(phone);
+            phonenumber.setVisibility(View.GONE);
             name.setEnabled(true);
         }
     }
 
-    private void showdetailtoadmin(String nam,String pa,String jone,String up,String ca)
+    private void showdetailtorenter(String nam,String pa,String jone,String up,String ca,String phn)
     {
-        password.setText(pass);
+        password.setText(pa);
         password.setEnabled(true);
         password.setInputType(InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD);
-        category.setText(cat);
-        joiningdate.setText(join);
-        lastupdate.setText(update);
-        name.setText(names);
+        category.setText(ca);
+        joiningdate.setText(jone);
+        lastupdate.setText(up);
+        name.setText(nam);
         name.setEnabled(true);
+        phonenumber.setText(phn);
+        phonenumber.setEnabled(true);
     }
 
     public void updetail(View view) {
         final String naf = name.getText().toString();
         final String pas = password.getText().toString();
+        phone = phonenumber.getText().toString();
 
         progressDialog = new ProgressDialog(details_all.this);
         progressDialog.setCancelable(false);
@@ -200,6 +208,7 @@ public class details_all extends AppCompatActivity {
                 params.put("username",usernames);
                 params.put("name",naf);
                 params.put("password",pas);
+                params.put("phonenumber",phone);
                 return params;
             }
         };
