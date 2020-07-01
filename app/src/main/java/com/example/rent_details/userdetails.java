@@ -37,6 +37,7 @@ public class userdetails extends AppCompatActivity {
 
         Intent intent = getIntent();
         username = intent.getExtras().getString("username");
+        getSupportActionBar().setTitle(username);
         ed_date     = findViewById(R.id.edtName);
         ed_amount    = findViewById(R.id.edtEmail);
         ed_units  = findViewById(R.id.edtContact);

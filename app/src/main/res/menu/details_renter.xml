@@ -2,14 +2,15 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <item
-        android:id="@+id/due_bills"
-        android:title="Due Payments"
-        app:showAsAction="never"/>
+<!--    <item-->
+<!--        android:id="@+id/due_bills"-->
+<!--        android:title="Due Payments"-->
+<!--        app:showAsAction="never"/>-->
     <item
         android:id="@+id/renter_setting"
+        android:icon="@drawable/profile"
         android:title="Settings"
-        app:showAsAction="never"/>
+        app:showAsAction="always"/>
 
 
 </menu>

@@ -44,9 +44,8 @@ public class showdetails extends AppCompatActivity {
     String st_username;
     ProgressDialog progressDialog;
     SwipeRefreshLayout swipeRefreshLayout;
-    ListOfRentersForAdmin listOfRentersForAdmin;
+    //ListOfRentersForAdmin listOfRentersForAdmin;
     private int category;
-   // boolean flag=false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,6 +58,12 @@ public class showdetails extends AppCompatActivity {
         st_username = intent.getExtras().getString("username");
         //Objects.requireNonNull(getSupportActionBar()).setTitle(st_username);
         category = intent.getExtras().getInt("category");
+        getSupportActionBar().setTitle(st_username);
+
+        if(category==1) {
+            Toast.makeText(getApplicationContext(), "Welcome " + st_username, Toast.LENGTH_SHORT).show();
+        }
+
         myadapter = new myadapter(this,renterArrayList);
         listView.setAdapter(myadapter);
 
@@ -103,6 +108,7 @@ public class showdetails extends AppCompatActivity {
         });
 
         retrivedata();
+
     }
 
     @Override
@@ -136,8 +142,8 @@ public class showdetails extends AppCompatActivity {
                             .putExtra("category",1)
                             .putExtra("username",st_username));
                     break;
-                case R.id.due_bills:
-                    break;
+//                case R.id.due_bills:
+//                    break;
             }
 
         return true;
@@ -165,7 +171,7 @@ public class showdetails extends AppCompatActivity {
                             JSONArray jsonArray = jsonObject.getJSONArray("userdetails");
                             if(success.equals("1"))
                             {
-                                for(int i =0 ; i<jsonArray.length();i++)
+                                for(int i =jsonArray.length()-1 ; i>=0;i--)
                                 {
                                     JSONObject object = jsonArray.getJSONObject(i);
                                     String date=object.getString("date");
@@ -179,7 +185,7 @@ public class showdetails extends AppCompatActivity {
                                     renter = new renter(date,amount,units,rent,bill,addedon,lastupdate);
                                     renterArrayList.add(renter);
                                     myadapter.notifyDataSetChanged();
-                                    Toast.makeText(showdetails.this, lastupdate, Toast.LENGTH_SHORT).show();
+                                   // Toast.makeText(showdetails.this, lastupdate, Toast.LENGTH_SHORT).show();
 
                                 }
                             }
@@ -268,4 +274,5 @@ public class showdetails extends AppCompatActivity {
         });
         builder.create().show();
     }
+
 }

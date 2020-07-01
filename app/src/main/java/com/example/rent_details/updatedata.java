@@ -23,6 +23,7 @@ import com.android.volley.toolbox.Volley;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 public class updatedata extends AppCompatActivity {
 
@@ -49,6 +50,7 @@ public class updatedata extends AppCompatActivity {
         Intent intent = getIntent();
         position = intent.getExtras().getInt("position");
         username=intent.getStringExtra("username");
+        Objects.requireNonNull(getSupportActionBar()).setTitle(username);
         date_tv.setText(showdetails.renterArrayList.get(position).getDate());
         amount.setText(showdetails.renterArrayList.get(position).getAmount());
         unit.setText(showdetails.renterArrayList.get(position).getUnit());
