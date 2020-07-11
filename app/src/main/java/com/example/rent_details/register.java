@@ -2,7 +2,9 @@ package com.example.rent_details;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -38,6 +40,18 @@ public class register extends AppCompatActivity {
         ed_email = findViewById(R.id.ed_email);
         ed_username = findViewById(R.id.ed_username);
         ed_password = findViewById(R.id.ed_password);
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(register.this);
+        builder.setTitle("Alert!!");
+        builder.setMessage("If you are owner then register here, else ask you house owner to make a account. Are you a house owner?");
+        builder.setPositiveButton("Yes",null);
+        builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                startActivity(new Intent(register.this,login.class));
+                finish();
+            }
+        }).create().show();
     }
 
     private void pref(){
