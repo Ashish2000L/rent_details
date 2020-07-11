@@ -58,7 +58,6 @@ public class ListOfRentersForAdmin extends AppCompatActivity {
         welcomemsg = "Welcome "+ byadmin;
         getSupportActionBar().setTitle(welcomemsg);
 
-        Toast.makeText(this, "Welcome "+byadmin, Toast.LENGTH_SHORT).show();
         listView = findViewById(R.id.listofrenters_listview);
         swipeRefreshLayout = findViewById(R.id.listofrenters);
         listOfRenterAdapter=new ListOfRenterAdapter(this,listOfRentersArrayList);
