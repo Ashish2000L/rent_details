@@ -70,32 +70,38 @@ public class showdetails extends AppCompatActivity {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, final int position, long id) {
-                AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
+                if(category==0) {
+                    AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
 
-                CharSequence[] dialogitem={"View Data","Edit Data","Delete Data"};
+                    CharSequence[] dialogitem = {"View Data", "Edit Data", "Delete Data"};
 
-                builder.setTitle(renterArrayList.get(position).getDate());
-                builder.setItems(dialogitem, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int i) {
-                        switch(i){
-                            case 0:
-                                startActivity(new Intent(getApplicationContext(),viewdata.class).putExtra(
-                                        "position",position));
-                                break;
-                            case 1: startActivity(new Intent(getApplicationContext(),updatedata.class)
-                            .putExtra("position",position)
-                            .putExtra("username",st_username));
-                                break;
-                            case 2:
-                                deletedata(renterArrayList.get(position).getDate());
-                                break;
+                    builder.setTitle(renterArrayList.get(position).getDate());
+                    builder.setItems(dialogitem, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int i) {
+                            switch (i) {
+                                case 0:
+                                    startActivity(new Intent(getApplicationContext(), viewdata.class).putExtra(
+                                            "position", position));
+                                    break;
+                                case 1:
+                                    startActivity(new Intent(getApplicationContext(), updatedata.class)
+                                            .putExtra("position", position)
+                                            .putExtra("username", st_username));
+                                    break;
+                                case 2:
+                                    deletedata(renterArrayList.get(position).getDate());
+                                    break;
+                            }
+
                         }
+                    });
 
-                    }
-                });
-
-                builder.create().show();
+                    builder.create().show();
+                }else if(category==1){
+                    startActivity(new Intent(getApplicationContext(), viewdata.class).putExtra(
+                            "position", position));
+                }
             }
         });
 
@@ -185,7 +191,6 @@ public class showdetails extends AppCompatActivity {
                                     renter = new renter(date,amount,units,rent,bill,addedon,lastupdate);
                                     renterArrayList.add(renter);
                                     myadapter.notifyDataSetChanged();
-                                   // Toast.makeText(showdetails.this, lastupdate, Toast.LENGTH_SHORT).show();
 
                                 }
                             }

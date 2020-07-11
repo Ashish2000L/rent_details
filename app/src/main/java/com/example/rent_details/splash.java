@@ -16,6 +16,7 @@ import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Handler;
 import android.view.View;
 import android.webkit.CookieManager;
 import android.webkit.DownloadListener;
@@ -25,7 +26,15 @@ import android.webkit.WebView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings;
 import com.karumi.dexter.Dexter;
@@ -33,6 +42,10 @@ import com.karumi.dexter.PermissionToken;
 import com.karumi.dexter.listener.PermissionDeniedResponse;
 import com.karumi.dexter.listener.PermissionGrantedResponse;
 import com.karumi.dexter.listener.single.PermissionListener;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.File;
 
@@ -62,16 +75,20 @@ public class splash extends AppCompatActivity {
         setContentView(R.layout.activity_splash);
 
         firebaseRemoteConfig = FirebaseRemoteConfig.getInstance();
-        FirebaseRemoteConfigSettings configSettings = new FirebaseRemoteConfigSettings.Builder().setDeveloperModeEnabled(BuildConfig.DEBUG).build();
+        FirebaseRemoteConfigSettings configSettings = new FirebaseRemoteConfigSettings.Builder()
+                .setDeveloperModeEnabled(true).build(); //.setDeveloperModeEnabled(BuildConfig.DEBUG)
         firebaseRemoteConfig.setConfigSettings(configSettings);
         firebaseRemoteConfig.setDefaults(R.xml.remote_config_defaults);
 
         versions = findViewById(R.id.version);
         status = findViewById(R.id.status);
         versions.setText(BuildConfig.VERSION_NAME);
+        webView = findViewById(R.id.webview);
 
         if(checkConnection()) {
             getdetails();
+           // parsejson();
+            //displaywelcomemessagenotforce();
         }
     }
 
@@ -86,28 +103,45 @@ public class splash extends AppCompatActivity {
         } else {
             catchExpiration = 0;
         }
-        firebaseRemoteConfig.fetch(catchExpiration).addOnCompleteListener(this, new OnCompleteListener<Void>() {
+        new Handler().postDelayed(new Runnable() {
             @Override
-            public void onComplete(@NonNull com.google.android.gms.tasks.Task<Void> task) {
+            public void run() {
 
-                if (task.isSuccessful()) {
-                    check_for_update();
-                    //Toast.makeText(splash.this, "fetch successful", Toast.LENGTH_SHORT).show();
-                } else {
-                    Toast.makeText(splash.this, "Fetch Failed",
-                            Toast.LENGTH_LONG).show();
-                    final Intent transfer= new Intent(splash.this,login.class); //change this after testing
-                    startActivity(transfer);
-                    finish();
-                }
+                firebaseRemoteConfig.fetch(0).addOnCompleteListener(splash.this, new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull com.google.android.gms.tasks.Task<Void> task) {
+
+                        if (task.isSuccessful()) {
+                            firebaseRemoteConfig.activate().addOnCompleteListener(new OnCompleteListener<Boolean>() {
+                                @Override
+                                public void onComplete(@NonNull Task<Boolean> tasks) {
+                                    if(tasks.isSuccessful()){
+                                        check_for_update();
+                                    }
+                                }
+                            });
+                            //check_for_update();
+                            //status.setText(firebaseRemoteConfig.getString(Url));
+                            //Toast.makeText(splash.this, "fetch successful", Toast.LENGTH_SHORT).show();
+                        } else {
+                            Toast.makeText(splash.this, "Fetch Failed",
+                                    Toast.LENGTH_LONG).show();
+                            final Intent transfer= new Intent(splash.this,login.class); //change this after testing
+                            startActivity(transfer);
+                            finish();
+                        }
+                    }
+                });
+
             }
-        });
+        },0);
+
     }
-    private void check_for_update() {
-        String versioncode = firebaseRemoteConfig.getString("version");
-        Toast.makeText(this, "versioncode is:"+versioncode, Toast.LENGTH_LONG).show();
-        boolean value = true;
-        if (value == false){
+    private void check_for_update()
+    {
+        String versioncode = firebaseRemoteConfig.getString(VersionCode);
+        //Toast.makeText(this, "versioncode is:"+versioncode, Toast.LENGTH_LONG).show();
+
             int ver = Integer.parseInt(versioncode);
             final Intent intent = new Intent(splash.this, login.class);
         if (ver == version) {
@@ -115,13 +149,15 @@ public class splash extends AppCompatActivity {
                 @Override
                 public void run() {
                     try {
-                        sleep(2000);
+                        sleep(5000);
                         startActivity(intent);
+                        finish();
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
                 }
             });
+            time.start();
 
         } else {
             status.setText("Update Available!!");
@@ -132,7 +168,6 @@ public class splash extends AppCompatActivity {
             }
 
         }
-    }
 
     }
 
@@ -141,7 +176,7 @@ public class splash extends AppCompatActivity {
 
         final String new_Url = firebaseRemoteConfig.getString(Url).trim();
 
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        AlertDialog.Builder builder = new AlertDialog.Builder(splash.this);
         builder.setTitle("Update Available")
                 .setMessage("A newer version available ...")
                 .setPositiveButton("Update now", new DialogInterface.OnClickListener() {
@@ -212,12 +247,12 @@ public class splash extends AppCompatActivity {
     //dialog for latest update
     private void displaywelcomemessagenotforce()
     {
-        final String new_Url = firebaseRemoteConfig.getString(Url).trim();
+        final String new_Url =firebaseRemoteConfig.getString(Url).trim();
         final Intent intent = new Intent(splash.this, login.class);
 
 
         //giving dialog for an available update
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        AlertDialog.Builder builder = new AlertDialog.Builder(splash.this);
         builder.setTitle("Update Available");
         builder.setMessage("A newer vesion available ...");
         builder.setNegativeButton("Maybe later", new DialogInterface.OnClickListener() {
@@ -338,7 +373,8 @@ public class splash extends AppCompatActivity {
 
     }
 
-    public boolean checkConnection(){
+    public boolean checkConnection()
+    {
         ConnectivityManager connectivityManager = (ConnectivityManager)
                 this.getSystemService(Context.CONNECTIVITY_SERVICE);
         assert connectivityManager != null;
