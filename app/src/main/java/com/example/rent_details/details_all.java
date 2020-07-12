@@ -10,6 +10,8 @@ import android.text.InputType;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -20,6 +22,8 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -35,20 +39,24 @@ public class details_all extends AppCompatActivity {
     private int id;
     private String usernames;
     ProgressDialog progressDialog;
-    String names,byadmin,pass,cat,join,update,phone;
+    String names,byadmin,pass,cat,join,update,phone,imgname,customurl;
     Button updatedetail;
-    boolean flag=false;
+    boolean flag=false,loaded=false;
+    ImageView profileimage;
+    LinearLayout linearLayout;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_details_all);
 
-        //listOfRentersForAdmin.listOfRentersArrayList.get()
         Intent intent = getIntent();
         usernames = intent.getExtras().getString("username",null);
         id = intent.getExtras().getInt("category");
-        flag = intent.getBooleanExtra("isadmin",false);
 
+        getSupportActionBar().setTitle("Profile");
+
+        //when the viewer is admin flag will be true else it is false
+        flag = intent.getBooleanExtra("isadmin",false);
 
         name = findViewById(R.id.names);
         password = findViewById(R.id.passwords);
@@ -58,9 +66,25 @@ public class details_all extends AppCompatActivity {
         username = findViewById(R.id.usernames);
         updatedetail =findViewById(R.id.update_detail);
         phonenumber = findViewById(R.id.phone_number);
+        profileimage = findViewById(R.id.profileimg);
+        linearLayout = findViewById(R.id.mobile);
 
         username.setText(usernames);
         fetch_user_data();
+
+        profileimage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(loaded) {
+                    startActivity(new Intent(details_all.this, user_profile_img.class)
+                            .putExtra("name", names)
+                            .putExtra("id", id)
+                            .putExtra("isadmin", flag)
+                            .putExtra("url", customurl)
+                            .putExtra("username",usernames));
+                }
+            }
+        });
 
     }
 
@@ -92,6 +116,8 @@ public class details_all extends AppCompatActivity {
                                     join=object.getString("joiningdate");
                                     update = object.getString("lastupdate");
                                     phone = object.getString("phonenumber");
+                                    imgname = object.getString("profileimg");
+
                                     ///Toast.makeText(details_all.this, names, Toast.LENGTH_SHORT).show();
                                 }
                             }
@@ -102,11 +128,13 @@ public class details_all extends AppCompatActivity {
                             Toast.makeText(details_all.this, e.getMessage(), Toast.LENGTH_LONG).show();
                         }
                         //Toast.makeText(details_all.this, names, Toast.LENGTH_SHORT).show();
+                        customurl = "https://rentdetails.000webhostapp.com/images/"+imgname;
                         progressDialog.dismiss();
+                        loaded=true;
                         if(id==0){
-                            showdatatoadmin(names,pass,join,update,cat,phone);
+                            showdatatoadmin(names,pass,join,update,cat,phone,customurl);
                         }else{
-                            showdetailtorenter(names,pass,join,update,cat,phone);
+                            showdetailtorenter(names,pass,join,update,cat,phone,customurl);
                         }
                     }
                 }, new Response.ErrorListener() {
@@ -127,20 +155,27 @@ public class details_all extends AppCompatActivity {
         requestQueue.add(request);
     }
 
-    private void showdatatoadmin(String nam,String pa,String jone,String up,String ca,String phn)
+    private void showdatatoadmin(String nam,String pa,String jone,String up,String ca,String phn,String url)
     {
-        //Toast.makeText(this, "entered show data", Toast.LENGTH_SHORT).show();
         if(flag==false) {
-            Toast.makeText(this, phn, Toast.LENGTH_LONG).show();
+            //here admin is viewing the renter details
 
             password.setText(pa);
             category.setText(ca);
             joiningdate.setText(jone);
             lastupdate.setText(up);
             name.setText(nam);
+            linearLayout.setVisibility(View.VISIBLE);
             phonenumber.setText(phn);
-            updatedetail.setVisibility(View.GONE);
+
+            profileimage.setVisibility(View.VISIBLE);
+            Glide.with(details_all.this)
+                    .load(url)
+                    .apply(RequestOptions.circleCropTransform())
+                    .into(profileimage);
         }else if(flag==true){
+            //here admin is viewing his own details
+
             password.setText(pass);
             password.setEnabled(true);
             password.setInputType(InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD);
@@ -149,13 +184,15 @@ public class details_all extends AppCompatActivity {
             lastupdate.setText(update);
             name.setText(names);
             phonenumber.setText(phone);
-            phonenumber.setVisibility(View.GONE);
+            updatedetail.setVisibility(View.VISIBLE);
+            //phonenumber.setVisibility(View.GONE);
             name.setEnabled(true);
         }
     }
 
-    private void showdetailtorenter(String nam,String pa,String jone,String up,String ca,String phn)
-    {
+    private void showdetailtorenter(String nam,String pa,String jone,String up,String ca,String phn,String url)
+    {   //here renter is viewing his own detials
+
         password.setText(pa);
         password.setEnabled(true);
         password.setInputType(InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD);
@@ -164,8 +201,15 @@ public class details_all extends AppCompatActivity {
         lastupdate.setText(up);
         name.setText(nam);
         name.setEnabled(true);
+        linearLayout.setVisibility(View.VISIBLE);
         phonenumber.setText(phn);
         phonenumber.setEnabled(true);
+        profileimage.setVisibility(View.VISIBLE);
+        updatedetail.setVisibility(View.VISIBLE);
+        Glide.with(details_all.this)
+                .load(url)
+                .apply(RequestOptions.circleCropTransform())
+                .into(profileimage);
     }
 
     public void updetail(View view) {

@@ -8,16 +8,31 @@
     android:orientation="vertical"
     android:padding="10dp"
     android:background="@drawable/header">
-    <TextView
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Username"
-        android:textSize="30sp"
-        android:padding="5dp"
-        android:gravity="center_vertical"
-        android:id="@+id/usernames"
-        android:textColor="#fff"
-        />
+        android:orientation="horizontal"
+        android:padding="5dp">
+        <ImageView
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:id="@+id/profileimg"
+            android:src="@mipmap/profile1_round"
+            android:visibility="gone"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Username"
+            android:textSize="30sp"
+            android:padding="5dp"
+            android:gravity="center_horizontal"
+            android:id="@+id/usernames"
+            android:textColor="#fff"
+            android:layout_gravity="center_vertical"
+            />
+    </LinearLayout>
+
     <EditText
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -54,17 +69,35 @@
         android:enabled="false"
         android:id="@+id/category"/>
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="5dp"
+        android:layout_marginTop="10dp"
+        android:id="@+id/mobile"
+        android:visibility="gone">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Mobile Number: "
+            android:textSize="20sp"
+            android:textColor="#fff"/>
         <EditText
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Phone Number"
+            android:hint="Mobile number"
+            android:inputType="phone"
             android:textSize="20sp"
             android:padding="10dp"
-            android:textColor="#fff"
             android:gravity="center_vertical"
-            android:layout_marginTop="10dp"
             android:enabled="false"
-            android:id="@+id/phone_number" />
+            android:id="@+id/phone_number"
+            android:textColor="#fff"
+            />
+    </LinearLayout>
+
+
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -125,5 +158,6 @@
         android:background="@color/colorPrimary"
         android:textColor="@color/cardview_light_background"
         android:onClick="updetail"
+        android:visibility="gone"
         />
 </LinearLayout>
