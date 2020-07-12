@@ -34,6 +34,8 @@ public class login extends AppCompatActivity {
     public static final String pass="password";
     Button btnlogin;
 
+    //here category 1 means that the user is renter and 0 is that user is admin
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -93,7 +95,7 @@ public class login extends AppCompatActivity {
                                 .putExtra("username",str_username));
                         finish();
 
-                    }else if(response.equalsIgnoreCase("renter")){
+                    }else if(response.equalsIgnoreCase("Renter")){
 
                         ed_username.setText("");
                         ed_password.setText("");
@@ -104,14 +106,18 @@ public class login extends AppCompatActivity {
                         finish();
                     }
                     else{
-                        Toast.makeText(login.this, response, Toast.LENGTH_LONG).show();
+                        if(!response.equals("")) {
+                            Toast.makeText(login.this, response, Toast.LENGTH_LONG).show();
+                        }else{
+                            Toast.makeText(login.this, "Unable to Connect to server, Try again later!!", Toast.LENGTH_SHORT).show();
+                        }
                     }
                 }
             }, new Response.ErrorListener() {
                 @Override
                 public void onErrorResponse(VolleyError error) {
                     progressDialog.dismiss();
-                    Toast.makeText(login.this, error.getMessage(), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(login.this, "error "+error.getMessage(), Toast.LENGTH_SHORT).show();
                 }
             }
             ){

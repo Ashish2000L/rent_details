@@ -165,7 +165,7 @@ public class ListOfRentersForAdmin extends AppCompatActivity {
                                 String category = object.getString("category");
                                 String lastupdated = object.getString("lastupdate");
 
-                                Toast.makeText(ListOfRentersForAdmin.this, usernames, Toast.LENGTH_LONG).show();
+                                //Toast.makeText(ListOfRentersForAdmin.this, usernames, Toast.LENGTH_LONG).show();
                                 listOfRenters = new ListOfRenters(name, usernames, date_of_joining,lastupdated,password,category);
                                 listOfRentersArrayList.add(listOfRenters);
                                 listOfRenterAdapter.notifyDataSetChanged();

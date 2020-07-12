@@ -53,14 +53,14 @@ public class new_renter extends AppCompatActivity {
         progressDialog.setCancelable(false);
 
         if (names.isEmpty()) {
-            Toast.makeText(this, "Amount cannot be empty", Toast.LENGTH_LONG).show();
+            Toast.makeText(this, "Name cannot be empty", Toast.LENGTH_LONG).show();
         } else if (usernames.isEmpty()) {
-            Toast.makeText(this, "Unit cannot be empty", Toast.LENGTH_LONG).show();
+            Toast.makeText(this, "Username cannot be empty", Toast.LENGTH_LONG).show();
         }
         if (passwords.isEmpty()) {
-            Toast.makeText(this, "Rent status required", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "password cannot be empty", Toast.LENGTH_SHORT).show();
         } else if (phones.isEmpty()) {
-            Toast.makeText(this, "Bill status required", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Phone number cannot be empty", Toast.LENGTH_SHORT).show();
         } else {
             progressDialog.show();
             StringRequest request = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {

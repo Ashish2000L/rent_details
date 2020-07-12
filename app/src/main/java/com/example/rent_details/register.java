@@ -111,7 +111,7 @@ public class register extends AppCompatActivity {
                     if(error.getMessage()!=null){
                     Toast.makeText(register.this, error.getMessage(), Toast.LENGTH_LONG).show();
                 }else{
-                        Toast.makeText(register.this, "error error", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(register.this, "An error occured, Please try again later!!", Toast.LENGTH_SHORT).show();
                     }
             }
             }
