@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/edit"
+        android:icon="@drawable/edit"
+        android:title="Select Image"
+        app:showAsAction="always"/>
+
+    <item
+        android:id="@+id/upload"
+        android:icon="@drawable/upload"
+        android:title="Upload image"
+        app:showAsAction="always"/>
+
+</menu>
