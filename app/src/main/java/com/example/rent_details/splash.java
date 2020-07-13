@@ -3,14 +3,19 @@ package com.example.rent_details;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
 
+import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.DownloadManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.PackageManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
@@ -67,6 +72,8 @@ public class splash extends AppCompatActivity {
     private DownloadManager downloadManager;
     long download;
     TextView versions,status;
+    private String url, userAgent, contentDisposition,  mimetype;
+    private long contentLength;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -85,10 +92,23 @@ public class splash extends AppCompatActivity {
         versions.setText(BuildConfig.VERSION_NAME);
         webView = findViewById(R.id.webview);
 
+        status.setText("Checking for Internet connection...");
         if(checkConnection()) {
             getdetails();
-           // parsejson();
-            //displaywelcomemessagenotforce();
+        }else{
+            status.setText("Internet connection Required!!");
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    Intent intent = new Intent(splash.this,login.class);
+                    try {
+                        Thread.sleep(3000);
+                        startActivity(intent);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }).start();
         }
     }
 
@@ -149,7 +169,7 @@ public class splash extends AppCompatActivity {
                 @Override
                 public void run() {
                     try {
-                        sleep(5000);
+                        sleep(3000);
                         startActivity(intent);
                         finish();
                     } catch (InterruptedException e) {
@@ -181,18 +201,20 @@ public class splash extends AppCompatActivity {
                 .setMessage("A newer version available ...")
                 .setPositiveButton("Update now", new DialogInterface.OnClickListener() {
 
+                    @SuppressLint("SetJavaScriptEnabled")
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
 
                         status.setText("Checking for resources...");
-                        webView.setVisibility(View.VISIBLE);
+                        webView.setVisibility(View.INVISIBLE);
                         webView.loadUrl(new_Url);
-                        //text.setText(new_Url);
+                        status.setText(new_Url);
                         webView.getSettings().setJavaScriptEnabled(true);
                         webView.setDownloadListener(new DownloadListener() {
                             @Override
                             public void onDownloadStart(final String url, final String userAgent, final String contentDisposition, final String mimetype, final long contentLength) {
 
+                                status.setText("cleared webview");
                                 File file_new = new File("/storage/emulated/0/Download/", URLUtil.guessFileName(url, contentDisposition, mimetype));
 
                                 if(file_new.exists())
@@ -214,35 +236,72 @@ public class splash extends AppCompatActivity {
                                 }
 
                                 status.setText("Checking for permissions...");
-                                Dexter.withActivity(splash.this)
-                                        .withPermission(WRITE_EXTERNAL_STORAGE)
-                                        .withListener(new PermissionListener() {
-                                            @Override
-                                            public void onPermissionGranted(PermissionGrantedResponse permissionGrantedResponse) {
 
-                                                DownloadFile(url,userAgent,contentDisposition,mimetype,contentLength);
-                                            }
+                                if(ContextCompat.checkSelfPermission(splash.this, WRITE_EXTERNAL_STORAGE)== PackageManager.PERMISSION_GRANTED) {
+                                    status.setText("Permission Granted...");
+                                    DownloadFile(url,userAgent,contentDisposition,mimetype,contentLength);
+                                }else{
+                                    if(ActivityCompat.shouldShowRequestPermissionRationale(splash.this, WRITE_EXTERNAL_STORAGE)){
 
-                                            @Override
-                                            public void onPermissionDenied(PermissionDeniedResponse permissionDeniedResponse) {
+                                        new AlertDialog.Builder(splash.this)
+                                                .setTitle("Permission needed")
+                                                .setMessage("We need this permission to install update to the mobile.")
+                                                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                                                    @Override
+                                                    public void onClick(DialogInterface dialog, int which) {
+                                                        ActivityCompat.requestPermissions(splash.this,new String[]{WRITE_EXTERNAL_STORAGE},10);
+                                                    }
+                                                })
+                                                .setCancelable(false)
+                                                .create().show();
 
-                                            }
+                                    }else{
+                                        ActivityCompat.requestPermissions(splash.this,new String[]{WRITE_EXTERNAL_STORAGE},10);
+                                    }
+                                }
 
-                                            @Override
-                                            public void onPermissionRationaleShouldBeShown(com.karumi.dexter.listener.PermissionRequest permission, PermissionToken token) {
-                                                token.continuePermissionRequest();
-                                            }
-                                        }).check();
-                                webView.setVisibility(View.GONE);
+
+//                                Dexter.withActivity(splash.this})
+//                                        .withPermission(WRITE_EXTERNAL_STORAGE)
+//                                        .withListener(new PermissionListener() {
+//                                            @Override
+//                                            public void onPermissionGranted(PermissionGrantedResponse permissionGrantedResponse) {
+//
+//                                                DownloadFile(url,userAgent,contentDisposition,mimetype,contentLength);
+//                                            }
+//
+//                                            @Override
+//                                            public void onPermissionDenied(PermissionDeniedResponse permissionDeniedResponse) {
+//
+//                                            }
+//
+//                                            @Override
+//                                            public void onPermissionRationaleShouldBeShown(com.karumi.dexter.listener.PermissionRequest permission, PermissionToken token) {
+//                                                token.continuePermissionRequest();
+//                                            }
+//                                        }).check();
+                                //webView.setVisibility(View.GONE);
                             }
                         });
 
                     }
-                }).show();
+                })
+                .setCancelable(false)
+                .create().show();
 
 
     }
 
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        if(requestCode==10 ){
+            if(grantResults.length>0 && grantResults[0] == PackageManager.PERMISSION_GRANTED){
+                DownloadFile(url,userAgent,contentDisposition,mimetype,contentLength);
+            }else{
+                Toast.makeText(this, "Permission Denied..", Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
 
     //dialog for latest update
     private void displaywelcomemessagenotforce()
