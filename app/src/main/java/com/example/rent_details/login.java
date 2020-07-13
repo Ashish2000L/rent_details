@@ -3,10 +3,15 @@ package com.example.rent_details;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.ActivityManager;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -32,7 +37,9 @@ public class login extends AppCompatActivity {
     public static final  String shared_pref="shared_prefs";
     public static  final String user="username";
     public static final String pass="password";
+    public static final String TAG="servicefilenames";
     Button btnlogin;
+    volleynotificationservice volleynotificationservices = new volleynotificationservice();
 
     //here category 1 means that the user is renter and 0 is that user is admin
 
@@ -51,18 +58,47 @@ public class login extends AppCompatActivity {
         btnlogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Login();
+                if(checkConnection()) {
+                    Login();
+                }else{
+                    Toast.makeText(login.this,"Internet Connection Required!!", Toast.LENGTH_SHORT).show();
+                }
             }
         });
     }
 
-    public void shared_prefs(){
+    public void shared_prefs()
+    {
 
         SharedPreferences sharedPreferences = getSharedPreferences(shared_pref,MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putString(user,str_username);
         editor.putString(pass,str_password);
         editor.apply();
+    }
+
+    public boolean checkConnection()
+    {
+        ConnectivityManager connectivityManager = (ConnectivityManager)
+                this.getSystemService(Context.CONNECTIVITY_SERVICE);
+        assert connectivityManager != null;
+        NetworkInfo wifi = connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
+        NetworkInfo mobileNetwork = connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
+
+
+        assert wifi != null;
+        if(wifi.isConnected()){
+            return true;
+
+        }
+        else {
+            assert mobileNetwork != null;
+            if (mobileNetwork.isConnected()){
+                return true;
+            }
+
+        }
+        return false;
     }
 
     public void Login() {
@@ -91,6 +127,9 @@ public class login extends AppCompatActivity {
                         ed_username.setText("");
                         ed_password.setText("");
                         shared_prefs();
+                        if(!ismyservicerunning(volleynotificationservices.getClass())){
+                            startService(new Intent(login.this,volleynotificationservice.class));
+                        }
                         startActivity(new Intent(getApplicationContext(),ListOfRentersForAdmin.class)
                                 .putExtra("username",str_username));
                         finish();
@@ -125,7 +164,7 @@ public class login extends AppCompatActivity {
                 protected Map<String, String> getParams() throws AuthFailureError {
                     Map<String,String> params = new HashMap<String, String>();
                     params.put("username",str_username);
-                    params.put("password",str_password);
+                                params.put("password",str_password);
                     return params;
                 }
             };
@@ -140,5 +179,25 @@ public class login extends AppCompatActivity {
     public void moveToRegistration(View view) {
         startActivity(new Intent(getApplicationContext(), register.class));
         finish();
+    }
+
+    @Override
+    protected void onDestroy() {
+        stopService(new Intent(this,volleynotificationservice.class));
+        super.onDestroy();
+    }
+
+    //this is to the check if the service is running or not...
+    private boolean ismyservicerunning(Class<?> serviceclass){
+
+        ActivityManager manager = (ActivityManager)getSystemService(Context.ACTIVITY_SERVICE);
+        for(ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)){
+            if(serviceclass.getName().equals(service.service.getClassName())) {
+                Log.d(TAG, "running " + serviceclass.getName());
+                return true;
+            }
+        }
+        Log.d(TAG, "not running "+serviceclass.getName());
+        return false;
     }
 }
