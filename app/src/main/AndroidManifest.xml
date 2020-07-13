@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="com.example.rent_details">
 
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
@@ -8,6 +9,7 @@
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.REQUEST_DELETE_PACKAGES" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
 
     <application
         android:allowBackup="true"
@@ -17,8 +19,21 @@
         android:roundIcon="@mipmap/profile1_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
-        android:usesCleartextTraffic="true">
-        <activity android:name=".user_profile_img"></activity>
+        android:usesCleartextTraffic="true"
+        tools:ignore="GoogleAppIndexingWarning">
+        <service
+            android:name=".volleynotificationservice"
+            android:enabled="true"
+            android:stopWithTask="false"/>
+
+        <receiver android:name=".Restarter"
+            android:enabled="true"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="restartservice"/>
+            </intent-filter>
+        </receiver>
+
 
         <provider
             android:name=".GenericFileProvider"
@@ -30,10 +45,15 @@
                 android:resource="@xml/filepaths" />
         </provider>
 
-        <activity android:name=".login"
+        <activity
+            android:name=".user_profile_img"
             android:screenOrientation="portrait"/>
-        <activity android:name=".new_renter"
-            android:screenOrientation="portrait"/>
+        <activity
+            android:name=".login"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".new_renter"
+            android:screenOrientation="portrait" />
         <activity
             android:name=".details_all"
             android:screenOrientation="portrait" />
