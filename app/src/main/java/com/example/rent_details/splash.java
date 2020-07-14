@@ -22,12 +22,15 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
+import android.util.Log;
 import android.view.View;
 import android.webkit.CookieManager;
 import android.webkit.DownloadListener;
 import android.webkit.PermissionRequest;
 import android.webkit.URLUtil;
+import android.webkit.WebResourceRequest;
 import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -53,6 +56,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
+import java.net.URI;
 
 import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
 import static java.lang.Thread.sleep;
@@ -63,20 +67,17 @@ public class splash extends AppCompatActivity {
     FirebaseRemoteConfig firebaseRemoteConfig;
     WebView webView;
     private static final String VersionCode = "versioncodes";
-    //private static final String Message = "message";
     private static final String force_update = "force_update";
-    //private static final String updatedetails = "updatedetails";
     private static final String Url = "url";
     private Uri path;
     private Context context;
     private DownloadManager downloadManager;
     long download;
     TextView versions,status;
-    private String url, userAgent, contentDisposition,  mimetype;
-    private long contentLength;
-
+    private String TAG = "Downloadingfiles";
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState)
+    {
         super.onCreate(savedInstanceState);
         getSupportActionBar().hide();
         setContentView(R.layout.activity_splash);
@@ -160,8 +161,6 @@ public class splash extends AppCompatActivity {
     private void check_for_update()
     {
         String versioncode = firebaseRemoteConfig.getString(VersionCode);
-        //Toast.makeText(this, "versioncode is:"+versioncode, Toast.LENGTH_LONG).show();
-
             int ver = Integer.parseInt(versioncode);
             final Intent intent = new Intent(splash.this, login.class);
         if (ver == version) {
@@ -193,6 +192,7 @@ public class splash extends AppCompatActivity {
 
     private void updatebyforce()
     {
+        Log.d(TAG, "updatebyforce: ");
 
         final String new_Url = firebaseRemoteConfig.getString(Url).trim();
 
@@ -206,104 +206,22 @@ public class splash extends AppCompatActivity {
                     public void onClick(DialogInterface dialog, int which) {
 
                         status.setText("Checking for resources...");
-                        webView.setVisibility(View.INVISIBLE);
-                        webView.loadUrl(new_Url);
+                        webView.setVisibility(View.VISIBLE);
                         status.setText(new_Url);
                         webView.getSettings().setJavaScriptEnabled(true);
-                        webView.setDownloadListener(new DownloadListener() {
-                            @Override
-                            public void onDownloadStart(final String url, final String userAgent, final String contentDisposition, final String mimetype, final long contentLength) {
-
-                                status.setText("cleared webview");
-                                File file_new = new File("/storage/emulated/0/Download/", URLUtil.guessFileName(url, contentDisposition, mimetype));
-
-                                if(file_new.exists())
-                                {
-                                    if(!file_new.isDirectory())
-                                    {
-                                        if(file_new.delete())
-                                        {
-                                            //text.setText("File deleted");
-                                            Toast.makeText(splash.this, "File Deleted", Toast.LENGTH_LONG).show();
-                                        }
-                                    }else{
-                                        //text.setText("File is a directory");
-                                        Toast.makeText(splash.this, "File is a directory", Toast.LENGTH_LONG).show();
-                                    }
-                                }else{
-                                    //text.setText("file don't exist");
-                                    Toast.makeText(splash.this, "File doesn't exist", Toast.LENGTH_LONG).show();
-                                }
-
-                                status.setText("Checking for permissions...");
-
-                                if(ContextCompat.checkSelfPermission(splash.this, WRITE_EXTERNAL_STORAGE)== PackageManager.PERMISSION_GRANTED) {
-                                    status.setText("Permission Granted...");
-                                    DownloadFile(url,userAgent,contentDisposition,mimetype,contentLength);
-                                }else{
-                                    if(ActivityCompat.shouldShowRequestPermissionRationale(splash.this, WRITE_EXTERNAL_STORAGE)){
-
-                                        new AlertDialog.Builder(splash.this)
-                                                .setTitle("Permission needed")
-                                                .setMessage("We need this permission to install update to the mobile.")
-                                                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                                                    @Override
-                                                    public void onClick(DialogInterface dialog, int which) {
-                                                        ActivityCompat.requestPermissions(splash.this,new String[]{WRITE_EXTERNAL_STORAGE},10);
-                                                    }
-                                                })
-                                                .setCancelable(false)
-                                                .create().show();
-
-                                    }else{
-                                        ActivityCompat.requestPermissions(splash.this,new String[]{WRITE_EXTERNAL_STORAGE},10);
-                                    }
-                                }
-
-
-//                                Dexter.withActivity(splash.this})
-//                                        .withPermission(WRITE_EXTERNAL_STORAGE)
-//                                        .withListener(new PermissionListener() {
-//                                            @Override
-//                                            public void onPermissionGranted(PermissionGrantedResponse permissionGrantedResponse) {
-//
-//                                                DownloadFile(url,userAgent,contentDisposition,mimetype,contentLength);
-//                                            }
-//
-//                                            @Override
-//                                            public void onPermissionDenied(PermissionDeniedResponse permissionDeniedResponse) {
-//
-//                                            }
-//
-//                                            @Override
-//                                            public void onPermissionRationaleShouldBeShown(com.karumi.dexter.listener.PermissionRequest permission, PermissionToken token) {
-//                                                token.continuePermissionRequest();
-//                                            }
-//                                        }).check();
-                                //webView.setVisibility(View.GONE);
-                            }
-                        });
+                        webView.loadUrl(new_Url);
+                        status.setText("Checking for permissions...");
+                        webView.setWebViewClient(new WebViewClient());
+                        checkforpermission();
 
                     }
                 })
                 .setCancelable(false)
-                .create().show();
+                 .create().show();
 
 
     }
 
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        if(requestCode==10 ){
-            if(grantResults.length>0 && grantResults[0] == PackageManager.PERMISSION_GRANTED){
-                DownloadFile(url,userAgent,contentDisposition,mimetype,contentLength);
-            }else{
-                Toast.makeText(this, "Permission Denied..", Toast.LENGTH_SHORT).show();
-            }
-        }
-    }
-
-    //dialog for latest update
     private void displaywelcomemessagenotforce()
     {
         final String new_Url =firebaseRemoteConfig.getString(Url).trim();
@@ -328,70 +246,97 @@ public class splash extends AppCompatActivity {
 
             @Override
             public void onClick(DialogInterface dialog, int which) {
+                status.setText("Checking for resources...");
                 webView.setVisibility(View.VISIBLE);
-                webView.loadUrl(new_Url);
+                status.setText(new_Url);
                 webView.getSettings().setJavaScriptEnabled(true);
-                webView.setDownloadListener(new DownloadListener() {
-                    @Override
-                    public void onDownloadStart(final String url, final String userAgent, final String contentDisposition, final String mimetype, final long contentLength) {
-
-                        status.setText("Checking for resources...");
-                        File file_new = new File("/storage/emulated/0/Download/", URLUtil.guessFileName(url, contentDisposition, mimetype));
-
-                        if(file_new.exists())
-                        {
-                            if(!file_new.isDirectory())
-                            {
-                                if(file_new.delete())
-                                {
-                                    //text.setText("File deleted");
-                                    Toast.makeText(splash.this, "File Deleted", Toast.LENGTH_LONG).show();
-                                }
-                            }else{
-                                //text.setText("File is a directory");
-                                Toast.makeText(splash.this, "File is a directory", Toast.LENGTH_LONG).show();
-                            }
-                        }else{
-                            //text.setText("file don't exist");
-                            Toast.makeText(splash.this, "File doesn't exist", Toast.LENGTH_LONG).show();
-                        }
-                        status.setText("Checking for permissions...");
-
-                        Dexter.withActivity(splash.this)
-                                .withPermission(WRITE_EXTERNAL_STORAGE)
-                                .withListener(new PermissionListener() {
-                                    @Override
-                                    public void onPermissionGranted(PermissionGrantedResponse response) {
-                                        DownloadFile(url,userAgent,contentDisposition,mimetype,contentLength);
-                                    }
-
-                                    @Override
-                                    public void onPermissionDenied(PermissionDeniedResponse response) {
-
-                                    }
-
-                                    @Override
-                                    public void onPermissionRationaleShouldBeShown(com.karumi.dexter.listener.PermissionRequest permission, PermissionToken token) {
-                                        token.continuePermissionRequest();
-                                    }
-                                }).check();
-
-                        webView.setVisibility(View.GONE);
-                    }
-                });
+                webView.loadUrl(new_Url);
+                status.setText("Checking for permissions...");
+                webView.setWebViewClient(new WebViewClient());
+                checkforpermission();
 
             }
-        }).show();
+        })
+                .setCancelable(false)
+                .create().show();
+    }
+    
+    public void checkforpermission()
+    {
+        if(ContextCompat.checkSelfPermission(splash.this, WRITE_EXTERNAL_STORAGE)== PackageManager.PERMISSION_GRANTED) {
+            status.setText("Waiting for server to Respond...");
+            webView.setDownloadListener(new DownloadListener() {
+                @Override
+                public void onDownloadStart(String url, String userAgent, String contentDisposition, String mimetype, long contentLength) {
+                    Log.d(TAG, "url "+url);
+                    Log.d(TAG, "useragent "+userAgent);
+                    DownloadFile(url,userAgent,contentDisposition,mimetype,contentLength);
+                }
+            });
+        }else{
+            if(ActivityCompat.shouldShowRequestPermissionRationale(splash.this, WRITE_EXTERNAL_STORAGE)){
+
+                new AlertDialog.Builder(splash.this)
+                        .setTitle("Permission needed")
+                        .setMessage("Please provide to permission to start installing latest update :)")
+                        .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                ActivityCompat.requestPermissions(splash.this,new String[]{WRITE_EXTERNAL_STORAGE},10);
+                            }
+                        })
+                        .setCancelable(false)
+                        .create().show();
+
+            }else{
+                ActivityCompat.requestPermissions(splash.this,new String[]{WRITE_EXTERNAL_STORAGE},10);
+            }
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults)
+    {
+        if(requestCode==10 ){
+            if(grantResults.length>0 && grantResults[0] == PackageManager.PERMISSION_GRANTED){
+                Log.d(TAG, "onRequestPermissionsResult: ");
+                status.setText("Waiting for server to Respond...");
+                webView.setDownloadListener(new DownloadListener() {
+                    @Override
+                    public void onDownloadStart(String url, String userAgent, String contentDisposition, String mimetype, long contentLength) {
+                        Log.d(TAG, "url "+url);
+                        Log.d(TAG, "useragent "+userAgent);
+                        DownloadFile(url,userAgent,contentDisposition,mimetype,contentLength);
+                    }
+                });
+            }else{
+                status.setText("Permission denied!");
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Intent intent = new Intent(splash.this,login.class);
+                        try {
+                            Thread.sleep(3000);
+                            startActivity(intent);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }).start();
+            }
+        }
     }
 
     //for starting downloading process
     public void DownloadFile(String url, String userAgent, final String contentDisposition, final String mimetype, final long contentLength )
     {
+        Log.d(TAG, "DownloadFile: ");
 
         String destination = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) + "/";
         String fileName = URLUtil.guessFileName(url, contentDisposition, mimetype);
         destination += fileName;
         final Uri new_uri = Uri.parse("file://" + destination);
+        Log.d(TAG, "new uri "+new_uri);
         //text.setText("Downloading will start in a minute...");
 
         DownloadManager.Request request = new DownloadManager.Request(Uri.parse(url));
@@ -417,6 +362,7 @@ public class splash extends AppCompatActivity {
         File file_dir = new File("/storage/emulated/0/Download/", URLUtil.guessFileName(url, contentDisposition, mimetype));
         path = FileProvider.getUriForFile(context, BuildConfig.APPLICATION_ID + ".provider", file_dir);
 
+        Log.d(TAG, "path "+path);
         BroadcastReceiver new_brpdcast = new BroadcastReceiver() {
             @Override
             public void onReceive(final Context context, Intent intent) {
