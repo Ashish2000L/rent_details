@@ -26,6 +26,11 @@
             android:enabled="true"
             android:stopWithTask="false"/>
 
+        <service
+            android:name=".forgroundservice"
+            android:enabled="true"
+            android:stopWithTask="false"/>
+
         <receiver android:name=".Restarter"
             android:enabled="true"
             android:exported="true">
@@ -36,13 +41,13 @@
 
 
         <provider
-            android:name=".GenericFileProvider"
-            android:authorities="com.example.rent_details.provider"
-            android:exported="false"
-            android:grantUriPermissions="true">
-            <meta-data
-                android:name="android.support.FILE_PROVIDER_PATHS"
-                android:resource="@xml/filepaths" />
+        android:name=".GenericFileProvider"
+        android:authorities="com.example.rent_details.provider"
+        android:exported="false"
+        android:grantUriPermissions="true">
+        <meta-data
+            android:name="android.support.FILE_PROVIDER_PATHS"
+            android:resource="@xml/filepaths" />
         </provider>
 
         <activity
