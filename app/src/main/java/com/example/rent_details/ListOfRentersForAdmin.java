@@ -259,4 +259,9 @@ public class ListOfRentersForAdmin extends AppCompatActivity {
 
     }
 
+    @Override
+    protected void onDestroy() {
+        stopService(new Intent(this,volleynotificationservice.class));
+        super.onDestroy();
+    }
 }

@@ -172,18 +172,7 @@ public class userdetails extends AppCompatActivity {
             RequestQueue requestQueue = Volley.newRequestQueue(userdetails.this);
             requestQueue.add(request);
 
-
-
         }
-
-
-
-
     }
 
-    @Override
-    public void onBackPressed() {
-        super.onBackPressed();
-        finish();
-    }
 }

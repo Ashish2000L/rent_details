@@ -280,4 +280,9 @@ public class showdetails extends AppCompatActivity {
         builder.create().show();
     }
 
+    @Override
+    protected void onDestroy() {
+            stopService(new Intent(this, volleynotificationservice.class));
+            super.onDestroy();
+    }
 }

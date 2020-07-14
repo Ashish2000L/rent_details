@@ -53,4 +53,9 @@ public class viewdata extends AppCompatActivity {
         tvaddedon.setText(showdetails.renterArrayList.get(position).getAddedon());
         tvlastupdate.setText(showdetails.renterArrayList.get(position).getLastupdate());
     }
+    @Override
+    protected void onDestroy() {
+        stopService(new Intent(this, volleynotificationservice.class));
+        super.onDestroy();
+    }
 }

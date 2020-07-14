@@ -40,6 +40,7 @@ public class login extends AppCompatActivity {
     public static final String TAG="servicefilenames";
     Button btnlogin;
     volleynotificationservice volleynotificationservices = new volleynotificationservice();
+    forgroundservice forgroundservice = new forgroundservice();
 
     //here category 1 means that the user is renter and 0 is that user is admin
 
@@ -127,9 +128,12 @@ public class login extends AppCompatActivity {
                         ed_username.setText("");
                         ed_password.setText("");
                         shared_prefs();
-                        if(!ismyservicerunning(volleynotificationservices.getClass())){
-                            startService(new Intent(login.this,volleynotificationservice.class));
+                        if(!ismyservicerunning(forgroundservice.getClass())){
+                            startService(new Intent(login.this,forgroundservice.class));
                         }
+//                        if(!ismyservicerunning(volleynotificationservices.getClass())){
+//                            startService(new Intent(login.this,volleynotificationservice.class));
+//                        }
                         startActivity(new Intent(getApplicationContext(),ListOfRentersForAdmin.class)
                                 .putExtra("username",str_username));
                         finish();
@@ -139,13 +143,16 @@ public class login extends AppCompatActivity {
                         ed_username.setText("");
                         ed_password.setText("");
                         shared_prefs();
+                        if(!ismyservicerunning(volleynotificationservices.getClass())){
+                            startService(new Intent(login.this,volleynotificationservice.class));
+                        }
                         startActivity(new Intent(login.this,showdetails.class)
                         .putExtra("username",str_username)
                         .putExtra("category",1));
                         finish();
                     }
                     else{
-                        if(!response.equals("")) {
+                        if(!response.equals("") && !response.equals(null)) {
                             Toast.makeText(login.this, response, Toast.LENGTH_LONG).show();
                         }else{
                             Toast.makeText(login.this, "Unable to Connect to server, Try again later!!", Toast.LENGTH_SHORT).show();
@@ -181,11 +188,11 @@ public class login extends AppCompatActivity {
         finish();
     }
 
-    @Override
-    protected void onDestroy() {
-        stopService(new Intent(this,volleynotificationservice.class));
-        super.onDestroy();
-    }
+//    @Override
+//    protected void onDestroy() {
+//        stopService(new Intent(this,volleynotificationservice.class));
+//        super.onDestroy();
+//    }
 
     //this is to the check if the service is running or not...
     private boolean ismyservicerunning(Class<?> serviceclass){
