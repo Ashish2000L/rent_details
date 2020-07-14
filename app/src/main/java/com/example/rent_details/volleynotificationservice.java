@@ -97,8 +97,66 @@ public class volleynotificationservice extends Service {
     public int onStartCommand(Intent intent, int flags, int startId) {
 
         if(!usernames.equals("")) {
-            Log.d(TAG, usernames);
-            fetchrunnable.run();
+            Runnable runnable = new Runnable() {
+                @Override
+                public void run() {
+
+                    String url ="https://rentdetails.000webhostapp.com/fetchnotif.php";
+                    if(checkConnection()) {
+                        StringRequest request = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
+                            @Override
+                            public void onResponse(String response) {
+                                JSONObject jsonObject;
+                                String success;
+                                try {
+                                    jsonObject = new JSONObject(response);
+                                    success = jsonObject.getString("success");
+                                    JSONArray jsonArray = jsonObject.getJSONArray("data");
+                                    if (success.equals("1")) {
+                                        for (int i = 0; i < jsonArray.length(); i++) {
+                                            JSONObject object = jsonArray.getJSONObject(i);
+
+                                            token = object.getString("token");
+                                            title = object.getString("title");
+                                            body = object.getString("body");
+
+                                            Log.d(TAG, "into the request");
+                                        }
+                                    }
+                                } catch (JSONException ex) {
+                                    ex.printStackTrace();
+                                }
+
+                                searchforlatestnotif(token, title, body);
+                            }
+                        }, new Response.ErrorListener() {
+                            @Override
+                            public void onErrorResponse(VolleyError error) {
+
+                            }
+                        }) {
+                            @Override
+                            protected Map<String, String> getParams() throws AuthFailureError {
+                                Map<String, String> params = new HashMap<String, String>();
+                                params.put("username", usernames);
+                                return params;
+                            }
+                        };
+
+                        RequestQueue requestQueue = Volley.newRequestQueue(volleynotificationservice.this);
+                        requestQueue.add(request);
+
+                    }else{
+                        Log.d(TAG, "No internet, skipping string...");
+                    }
+
+                    handler.postDelayed(this, 60000);
+                    Log.d(TAG, "post delaying this run....");
+
+                }
+            };
+            runnable.run();
+            //fetchrunnable.run();
         }else{
             Log.d(TAG, "username not found");
         }
@@ -116,16 +174,12 @@ public class volleynotificationservice extends Service {
         sharedPreferences = getSharedPreferences(shared_pref,MODE_PRIVATE);
         tok =sharedPreferences.getString(tokenname,"0");
 
-        Log.d(TAG, "tok value is "+tok);
-        Log.d(TAG, "tokens value is "+tokens);
         if(!tok.equals(tokens)){
             sharedprefrenced(tokens);
             shownotification(bodys,titles);
         }else{
             isfetchingdone =true;
         }
-
-
     }
 
     private  void shownotification(String bodye, String titlee)
@@ -156,7 +210,6 @@ public class volleynotificationservice extends Service {
 
             assert managers != null;
             managers.notify(Notification_id,noficationed.build());
-            Log.d(TAG, "send notification");
 
         }else
             if(Build.VERSION.SDK_INT>=Build.VERSION_CODES.O){
@@ -188,7 +241,6 @@ public class volleynotificationservice extends Service {
                     Notification_id=5;
                 }
                 notificationManager.notify(Notification_id,notification);
-                Log.d(TAG, "send notification through channel");
         }
 
 
@@ -252,7 +304,7 @@ public class volleynotificationservice extends Service {
             }
 
                 handler.postDelayed(this, 60000);
-                Log.d(TAG, "handling postdelay");
+            Log.d(TAG, "post delay");
 
         }
     };
@@ -271,7 +323,6 @@ public class volleynotificationservice extends Service {
         brodcastintent.setAction("restartservice");
         brodcastintent.setClass(this,Restarter.class);
         this.sendBroadcast(brodcastintent);
-
     }
 
     public boolean checkConnection()
