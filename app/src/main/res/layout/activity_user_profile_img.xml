@@ -5,7 +5,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".user_profile_img"
-    android:background="#000">
+    android:background="#000"
+    android:gravity="center">
     <ProgressBar
         android:layout_width="50dp"
         android:layout_height="50dp"
@@ -17,8 +18,8 @@
 
     <ImageView
         android:layout_width="match_parent"
-        android:layout_height="300dp"
-        android:scaleType="centerCrop"
+        android:layout_height="match_parent"
+        android:scaleType="fitCenter"
         android:id="@+id/userprofileimage"
         android:layout_centerInParent="true"
         />

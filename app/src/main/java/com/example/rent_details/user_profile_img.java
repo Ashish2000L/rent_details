@@ -6,6 +6,7 @@ import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.Manifest;
+import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -41,6 +42,8 @@ import com.karumi.dexter.listener.PermissionDeniedResponse;
 import com.karumi.dexter.listener.PermissionGrantedResponse;
 import com.karumi.dexter.listener.PermissionRequest;
 import com.karumi.dexter.listener.single.PermissionListener;
+import com.theartofdev.edmodo.cropper.CropImage;
+import com.theartofdev.edmodo.cropper.CropImageView;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -58,6 +61,7 @@ public class user_profile_img extends AppCompatActivity {
     ProgressBar progressBar;
     Bitmap bitmap;
     String encodedimage;
+    String TAG ="forgroundserviceexample";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -196,17 +200,35 @@ public class user_profile_img extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
 
-        if(requestCode==100 && resultCode==RESULT_OK && data!=null)
+        if(requestCode==100 && resultCode== Activity.RESULT_OK && data!=null && data.getData()!=null)
         {
             Uri filepath = data.getData();
-            try {
-                InputStream inputStream = getContentResolver().openInputStream(filepath);
-                bitmap = BitmapFactory.decodeStream(inputStream);
-                imageView.setImageBitmap(bitmap);
-
-                //storeimage(bitmap);
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
+            Log.d(TAG, "selected image uri "+filepath);
+            CropImage.activity(filepath)
+                    .setCropMenuCropButtonTitle("Crop Image")
+                    .setCropShape(CropImageView.CropShape.OVAL)
+                    .setFixAspectRatio(true)
+                    .setGuidelines(CropImageView.Guidelines.ON)
+                    .start(this);
+        }
+        if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE) {
+            CropImage.ActivityResult result = CropImage.getActivityResult(data);
+            if (resultCode == RESULT_OK) {
+                assert result != null;
+                Uri resultUri = result.getUri();
+                Log.d(TAG, "uri of croped image is "+resultUri);
+                try {
+                    InputStream inputStream = getContentResolver().openInputStream(resultUri);
+                    bitmap = BitmapFactory.decodeStream(inputStream);
+                    imageView.setImageBitmap(bitmap);
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                }
+                imageView.setImageURI(resultUri);
+            } else if (resultCode == CropImage.CROP_IMAGE_ACTIVITY_RESULT_ERROR_CODE) {
+                Exception error = result.getError();
+                Log.d(TAG, "onActivityResult: "+ error.getMessage());
+                Toast.makeText(this, error.getMessage(), Toast.LENGTH_SHORT).show();
             }
         }
 
@@ -224,5 +246,13 @@ public class user_profile_img extends AppCompatActivity {
         encodedimage = android.util.Base64.encodeToString(imagebytes, Base64.DEFAULT);
 
         Log.d("encoded",encodedimage);
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        startActivity(new Intent(user_profile_img.this,details_all.class)
+        .putExtra("username",username)
+        .putExtra("category",ids).putExtra("isadmin", viewingadminprofile));
     }
 }
