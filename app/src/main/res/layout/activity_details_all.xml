@@ -6,25 +6,45 @@
     android:layout_height="match_parent"
     tools:context=".details_all"
     android:orientation="vertical"
-    android:padding="10dp"
+    android:paddingTop="5dp"
+    android:paddingStart="10dp"
+    android:paddingEnd="10dp"
     android:background="@drawable/header">
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:padding="5dp">
+        android:padding="5dp"
+        android:gravity="center_horizontal">
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingRight="30dp"
+            android:paddingLeft="30dp"
+            android:gravity="center"
+            android:visibility="gone"
+            android:id="@+id/relativelayout">
+            <ProgressBar
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:id="@+id/progress"
+                android:visibility="gone"
+                />
         <ImageView
             android:layout_width="100dp"
             android:layout_height="100dp"
             android:id="@+id/profileimg"
             android:src="@mipmap/profile1_round"
-            android:visibility="gone"/>
+            android:visibility="gone"
+            android:adjustViewBounds="true"/>
+        </RelativeLayout>
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Username"
-            android:textSize="30sp"
+            android:textSize="40sp"
             android:padding="5dp"
             android:gravity="center_horizontal"
             android:id="@+id/usernames"
@@ -98,31 +118,32 @@
     </LinearLayout>
 
 
-
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
         android:layout_marginTop="10dp"
+        android:orientation="horizontal"
         android:padding="5dp">
+
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Joining Date: "
-            android:textSize="20sp"
-            android:textColor="#fff"/>
-    <EditText
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="Joining Date"
-        android:textSize="20sp"
-        android:padding="10dp"
-        android:gravity="center_vertical"
-        android:enabled="false"
-        android:id="@+id/joiningdate"
-        android:textColor="#fff"
-        />
+            android:textColor="#fff"
+            android:textSize="20sp" />
+
+        <EditText
+            android:id="@+id/joiningdate"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:enabled="false"
+            android:gravity="center_vertical"
+            android:hint="Joining Date"
+            android:padding="10dp"
+            android:textColor="#fff"
+            android:textSize="20sp" />
     </LinearLayout>
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

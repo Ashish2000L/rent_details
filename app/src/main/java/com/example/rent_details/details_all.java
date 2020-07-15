@@ -1,9 +1,12 @@
 package com.example.rent_details;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.swiperefreshlayout.widget.CircularProgressDrawable;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.text.InputType;
@@ -12,6 +15,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -23,7 +28,13 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.Priority;
+import com.bumptech.glide.load.DataSource;
+import com.bumptech.glide.load.engine.GlideException;
+import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
+import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.RequestOptions;
+import com.bumptech.glide.request.target.Target;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -44,6 +55,8 @@ public class details_all extends AppCompatActivity {
     boolean flag=false,loaded=false;
     ImageView profileimage;
     LinearLayout linearLayout;
+    ProgressBar progressBar;
+    RelativeLayout relativeLayout;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -68,6 +81,8 @@ public class details_all extends AppCompatActivity {
         phonenumber = findViewById(R.id.phone_number);
         profileimage = findViewById(R.id.profileimg);
         linearLayout = findViewById(R.id.mobile);
+        progressBar = findViewById(R.id.progress);
+        relativeLayout = findViewById(R.id.relativelayout);
 
         username.setText(usernames);
         fetch_user_data();
@@ -154,6 +169,47 @@ public class details_all extends AppCompatActivity {
         RequestQueue requestQueue = Volley.newRequestQueue(this);
         requestQueue.add(request);
     }
+    public  void  loadimage(String url){
+
+        profileimage.setVisibility(View.VISIBLE);
+        relativeLayout.setVisibility(View.VISIBLE);
+
+        final CircularProgressDrawable circularProgressDrawable = new CircularProgressDrawable(this);
+        circularProgressDrawable.setStrokeWidth(5f);
+        circularProgressDrawable.setCenterRadius(30f);
+        circularProgressDrawable.start();
+
+        RequestOptions requestOptions = new RequestOptions();
+        requestOptions.placeholder(circularProgressDrawable);
+        requestOptions.skipMemoryCache(true);
+        requestOptions.circleCrop();
+        requestOptions.priority(Priority.HIGH);
+        requestOptions.fitCenter();
+
+        Glide.with(details_all.this)
+                .load(url)
+                .apply(requestOptions)
+                .apply(RequestOptions.circleCropTransform())
+                .transition(DrawableTransitionOptions.withCrossFade())
+                .listener(new RequestListener<Drawable>() {
+                    @Override
+                    public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
+                        Toast.makeText(details_all.this, e.getMessage(), Toast.LENGTH_LONG).show();
+                        circularProgressDrawable.stop();
+                        relativeLayout.setVisibility(View.GONE);
+                        profileimage.setVisibility(View.GONE);
+                        return false;
+                    }
+
+                    @Override
+                    public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
+                        Toast.makeText(details_all.this, "Image Loaded", Toast.LENGTH_SHORT).show();
+                        circularProgressDrawable.stop();
+                        return false;
+                    }
+                })
+                .into(profileimage);
+    }
 
     private void showdatatoadmin(String nam,String pa,String jone,String up,String ca,String phn,String url)
     {
@@ -168,11 +224,27 @@ public class details_all extends AppCompatActivity {
             linearLayout.setVisibility(View.VISIBLE);
             phonenumber.setText(phn);
 
-            profileimage.setVisibility(View.VISIBLE);
-            Glide.with(details_all.this)
-                    .load(url)
-                    .apply(RequestOptions.circleCropTransform())
-                    .into(profileimage);
+            loadimage(url);
+
+//            Glide.with(details_all.this)
+//                    .load(url)
+//                    .apply(RequestOptions.circleCropTransform())
+//                    .listener(new RequestListener<Drawable>() {
+//                        @Override
+//                        public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
+//                            Toast.makeText(details_all.this, "Fail to Load profile Image", Toast.LENGTH_SHORT).show();
+//                            progressBar.setVisibility(View.GONE);
+//                            return false;
+//                        }
+//
+//                        @Override
+//                        public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
+//                            Toast.makeText(details_all.this, "Image Loading Successful ", Toast.LENGTH_SHORT).show();
+//                            progressBar.setVisibility(View.GONE);
+//                            return false;
+//                        }
+//                    })
+//                    .into(profileimage);
         }else if(flag==true){
             //here admin is viewing his own details
 
@@ -187,6 +259,7 @@ public class details_all extends AppCompatActivity {
             updatedetail.setVisibility(View.VISIBLE);
             //phonenumber.setVisibility(View.GONE);
             name.setEnabled(true);
+            loadimage(url);
         }
     }
 
@@ -258,5 +331,18 @@ public class details_all extends AppCompatActivity {
         };
         RequestQueue requestQueue = Volley.newRequestQueue(this);
         requestQueue.add(request);
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        if(flag==true && id==0) {
+            startActivity(new Intent(details_all.this, ListOfRentersForAdmin.class)
+            .putExtra("username",usernames));
+        }else{
+                startActivity(new Intent(details_all.this,showdetails.class)
+                .putExtra("category",id)
+                .putExtra("username",usernames));
+            }
     }
 }
