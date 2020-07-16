@@ -8,7 +8,7 @@ android {
         applicationId "com.example.rent_details"
         minSdkVersion 21
         targetSdkVersion 29
-        versionCode 2
+        versionCode 1
         versionName "1.2.5"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
