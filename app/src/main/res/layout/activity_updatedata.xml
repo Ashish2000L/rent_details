@@ -133,6 +133,27 @@
                 android:layout_marginLeft="30dp"/>
         </RadioGroup>
     </LinearLayout>
+
+    <CheckBox
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Want to edit note"
+        android:textSize="15sp"
+        android:layout_marginTop="10dp"
+        android:id="@+id/checkboxfornotes"
+        android:onClick="takenotehere"
+        />
+
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Write your note here"
+        android:layout_marginTop="10dp"
+        android:singleLine="false"
+        android:visibility="gone"
+        android:id="@+id/notetexts"
+        />
+
     <Button
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

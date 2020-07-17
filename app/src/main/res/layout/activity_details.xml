@@ -1,27 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:padding="20dp"
     tools:context=".userdetails">
-
+<LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="20dp">
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Enter Details"
-        android:textSize="28sp"
+        android:textSize="30sp"
         />
-    <EditText
+    <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textSize="20sp"
-        android:hint="Date"
+        android:textSize="25sp"
+        android:hint="Select Date"
         android:id="@+id/edtName"
         android:layout_marginTop="20dp"
-        android:inputType="textPersonName"
         />
     <EditText
         android:layout_width="match_parent"
@@ -44,7 +46,8 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:layout_marginTop="10dp">
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -114,6 +117,27 @@
                 android:layout_marginLeft="30dp"/>
         </RadioGroup>
     </LinearLayout>
+
+    <CheckBox
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Want to add note"
+        android:textSize="15sp"
+        android:layout_marginTop="10dp"
+        android:id="@+id/checkboxfornote"
+        android:onClick="takenotehere"
+        />
+
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Write your note here"
+        android:layout_marginTop="10dp"
+        android:singleLine="false"
+        android:visibility="gone"
+        android:id="@+id/notetext"
+        />
+
     <Button
         android:id="@+id/btnInsert"
         android:layout_width="match_parent"
@@ -124,5 +148,6 @@
         android:textSize="18sp"
         android:layout_marginTop="20dp"
         />
-
 </LinearLayout>
+
+</ScrollView>
