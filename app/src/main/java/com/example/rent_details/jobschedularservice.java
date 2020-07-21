@@ -28,16 +28,22 @@ public class jobschedularservice extends JobService {
     forgroundservice forgroundservice = new forgroundservice();
 
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public boolean onStartJob(JobParameters params) {
 
         Log.d(TAG, "Job started");
         if(!jobcancelled) {
 
-            //shownotification("Job started in background ","job started");
-            if (!ismyservicerunning(forgroundservice.getClass())) {
-                startForegroundService(new Intent(jobschedularservice.this, forgroundservice.getClass()));
+            if(Build.VERSION.SDK_INT>=Build.VERSION_CODES.O) {
+                //shownotification("Job started in background ","job started");
+                if (!ismyservicerunning(forgroundservice.getClass())) {
+                    startForegroundService(new Intent(jobschedularservice.this, forgroundservice.getClass()));
+                }
+            }else{
+                if (!ismyservicerunning(forgroundservice.getClass())) {
+                    startService(new Intent(jobschedularservice.this,forgroundservice.getClass()));
+                }
+
             }
 
         }else{
