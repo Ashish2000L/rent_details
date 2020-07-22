@@ -37,7 +37,8 @@
             android:id="@+id/profileimg"
             android:src="@mipmap/profile1_round"
             android:visibility="gone"
-            android:adjustViewBounds="true"/>
+            android:adjustViewBounds="true"
+            android:contentDescription="This is the profile image of the user" />
         </RelativeLayout>
 
         <TextView
