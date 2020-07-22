@@ -1,15 +1,21 @@
 package com.example.rent_details;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.DialogFragment;
 
+import android.app.DatePickerDialog;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
@@ -20,16 +26,21 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 
+import java.text.DateFormat;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
 
-public class userdetails extends AppCompatActivity {
+public class userdetails extends AppCompatActivity implements DatePickerDialog.OnDateSetListener {
 
-    EditText ed_date,ed_amount,ed_units;
+    EditText ed_amount,ed_units,notetext;
     Button btn_insert;
     RadioGroup radioGroup_bill,radioGroup_rent;
     RadioButton radioButton_rent,radioButton_bill,a,b,c,d;
     String bill,rent,username,url;
+    String TAG="datepickerpickthedate";
+    TextView ed_date;
+    CheckBox checkBox;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -44,10 +55,23 @@ public class userdetails extends AppCompatActivity {
         btn_insert = findViewById(R.id.btnInsert);
         radioGroup_bill = findViewById(R.id.radio_grp_bill_details);
         radioGroup_rent = findViewById(R.id.radio_grp_rent_details);
+        notetext = findViewById(R.id.notetext);
+        checkBox = findViewById(R.id.checkboxfornote);
+        radioButton_rent = findViewById(R.id.radio_paid_details);
+        radioButton_bill = findViewById(R.id.radio_paid_bill_details);
         a = findViewById(R.id.radio_paid_details);
         b = findViewById(R.id.radio_unpaid_details);
         c= findViewById(R.id.radio_paid_bill_details);
         d = findViewById(R.id.radio_unpaid_bill_details);
+
+        notetext.setText("");
+        ed_date.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                DialogFragment datepicker = new datepickerfragment();
+                datepicker.show(getSupportFragmentManager(),"Date Picker");
+            }
+        });
 
         btn_insert.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -56,6 +80,18 @@ public class userdetails extends AppCompatActivity {
                 insertData();
             }
         });
+
+
+
+    }
+
+    public void takenotehere(View view){
+        if(checkBox.isChecked()){
+            notetext.setVisibility(View.VISIBLE);
+        }else
+            if (!checkBox.isChecked()){
+                notetext.setVisibility(View.GONE);
+        }
     }
 
     public void radio_bill(View view)
@@ -81,28 +117,34 @@ public class userdetails extends AppCompatActivity {
         final String name = ed_date.getText().toString().trim();
         final String email = ed_amount.getText().toString().trim();
         final String contact = ed_units.getText().toString().trim();
+        final String noteontherent;
+        if(checkBox.isChecked()) {
+            noteontherent = notetext.getText().toString();
+        }else{
+            noteontherent="";
+        }
 
         final ProgressDialog progressDialog = new ProgressDialog(this);
         progressDialog.setMessage("Loading...");
         progressDialog.setCancelable(false);
 
         if(name.isEmpty()){
-            Toast.makeText(this, "Enter Name", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Enter Date", Toast.LENGTH_SHORT).show();
 
         }
         else if(email.isEmpty()){
-            Toast.makeText(this, "Enter Email", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Enter Amount", Toast.LENGTH_SHORT).show();
 
         }
         else if(contact.isEmpty()){
-            Toast.makeText(this, "Enter Contact", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Enter Units", Toast.LENGTH_SHORT).show();
 
         }
-        else if(rent.isEmpty()){
-            Toast.makeText(this, "Enter Address", Toast.LENGTH_SHORT).show();
-        }else if(bill.isEmpty())
+        else if(!radioButton_rent.isChecked()){
+            Toast.makeText(this, "Rent required", Toast.LENGTH_SHORT).show();
+        }else if(!radioButton_bill.isChecked())
         {
-            Toast.makeText(this, "bill required", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Bill required", Toast.LENGTH_SHORT).show();
         }
 
         else{
@@ -114,6 +156,7 @@ public class userdetails extends AppCompatActivity {
             b.setEnabled(false);
             c.setEnabled(false);
             d.setEnabled(false);
+            notetext.setEnabled(false);
             StringRequest request = new StringRequest(Request.Method.POST, "http://rentdetails.000webhostapp.com/insert.php",
                     new Response.Listener<String>() {
                         @Override
@@ -164,6 +207,8 @@ public class userdetails extends AppCompatActivity {
                     params.put("units",contact);
                     params.put("rent",rent);
                     params.put("bill",bill);
+                    params.put("note",noteontherent);
+                    Log.d(TAG, "getParams: "+noteontherent);
                     return params;
                 }
             };
@@ -175,4 +220,27 @@ public class userdetails extends AppCompatActivity {
         }
     }
 
+    @Override
+    public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
+        Calendar c = Calendar.getInstance();
+        c.set(Calendar.YEAR,year);
+        c.set(Calendar.MONTH,month);
+        c.set(Calendar.DAY_OF_MONTH,dayOfMonth);
+
+        String currentdatestring = DateFormat.getDateInstance(DateFormat.DEFAULT).format(c.getTime());
+        String datefield = DateFormat.getDateInstance(DateFormat.DATE_FIELD).format(c.getTime());
+        //String dayofmonth = DateFormat.getDateInstance(DateFormat.DAY_OF_WEEK_IN_MONTH_FIELD).format(c.getTime());
+        //String dayofyear = DateFormat.getDateInstance(DateFormat.DAY_OF_YEAR_FIELD).format(c.getTime());
+        String yearfield = DateFormat.getDateInstance(DateFormat.YEAR_FIELD).format(c.getTime());
+        String monthfield = DateFormat.getDateInstance(DateFormat.MONTH_FIELD).format(c.getTime());
+
+        Log.d(TAG, "onDateSet: date field "+datefield);
+        //Log.d(TAG, "onDateSet: day of month "+DateFormat.getDateInstance(DateFormat.DAY_OF_WEEK_IN_MONTH_FIELD).format(c.getTime()) );
+        //Log.d(TAG, "onDateSet: day of year "+DateFormat.getDateInstance(DateFormat.DAY_OF_YEAR_FIELD).format(c.getTime()));
+        Log.d(TAG, "onDateSet: year field "+yearfield);
+        Log.d(TAG, "onDateSet: month field "+monthfield );
+
+        ed_date.setText(currentdatestring);
+
+    }
 }
