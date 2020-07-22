@@ -10,6 +10,7 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.text.InputType;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -57,6 +58,7 @@ public class details_all extends AppCompatActivity {
     LinearLayout linearLayout;
     ProgressBar progressBar;
     RelativeLayout relativeLayout;
+    String TAG="image status";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -196,6 +198,7 @@ public class details_all extends AppCompatActivity {
                     public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
                         Toast.makeText(details_all.this, e.getMessage(), Toast.LENGTH_LONG).show();
                         circularProgressDrawable.stop();
+                        Log.d(TAG, "onLoadFailed: "+e.getMessage());
                         relativeLayout.setVisibility(View.GONE);
                         profileimage.setVisibility(View.GONE);
                         return false;
@@ -203,8 +206,9 @@ public class details_all extends AppCompatActivity {
 
                     @Override
                     public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
-                        Toast.makeText(details_all.this, "Image Loaded", Toast.LENGTH_SHORT).show();
+                        //Toast.makeText(details_all.this, "Image Loaded", Toast.LENGTH_SHORT).show();
                         circularProgressDrawable.stop();
+                        Log.d(TAG, "onResourceReady: image loaded");
                         return false;
                     }
                 })
@@ -279,10 +283,11 @@ public class details_all extends AppCompatActivity {
         phonenumber.setEnabled(true);
         profileimage.setVisibility(View.VISIBLE);
         updatedetail.setVisibility(View.VISIBLE);
-        Glide.with(details_all.this)
-                .load(url)
-                .apply(RequestOptions.circleCropTransform())
-                .into(profileimage);
+        loadimage(url);
+//        Glide.with(details_all.this)
+//                .load(url)
+//                .apply(RequestOptions.circleCropTransform())
+//                .into(profileimage);
     }
 
     public void updetail(View view) {
