@@ -7,14 +7,16 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import java.util.Objects;
 
 public class viewdata extends AppCompatActivity {
 
-    TextView tvdate,tvamount,tvunits,tvaddedon,tvlastupdate,tvrent,tvbill;
-    int position;
+    TextView tvdate,tvamount,tvunits,tvaddedon,tvlastupdate,tvrent,tvbill,note;
+    LinearLayout notelinearkayout;
+    int position,categroy;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -27,12 +29,20 @@ public class viewdata extends AppCompatActivity {
         tvlastupdate = findViewById(R.id.lastupdate);
         tvrent = findViewById(R.id.rent);
         tvbill = findViewById(R.id.bill);
+        note = findViewById(R.id.note);
+        notelinearkayout = findViewById(R.id.notelinearlayout);
 
         Intent intent=getIntent();
         position= Objects.requireNonNull( intent.getExtras()).getInt("position");
+        categroy = intent.getExtras().getInt("category",1);
         tvdate.setText(showdetails.renterArrayList.get(position).getDate());
         tvamount.setText(showdetails.renterArrayList.get(position).getAmount());
         tvunits.setText(showdetails.renterArrayList.get(position).getUnit());
+        String notes= showdetails.renterArrayList.get(position).getNote().toString();
+        if(!notes.equals("") && categroy==0){
+            notelinearkayout.setVisibility(View.VISIBLE);
+            note.setText(notes);
+        }
 
         if(showdetails.renterArrayList.get(position).getRent().equals("Paid")){
             tvrent.setBackgroundColor(Color.GREEN);
@@ -53,9 +63,5 @@ public class viewdata extends AppCompatActivity {
         tvaddedon.setText(showdetails.renterArrayList.get(position).getAddedon());
         tvlastupdate.setText(showdetails.renterArrayList.get(position).getLastupdate());
     }
-    @Override
-    protected void onDestroy() {
-        stopService(new Intent(this, volleynotificationservice.class));
-        super.onDestroy();
-    }
+
 }

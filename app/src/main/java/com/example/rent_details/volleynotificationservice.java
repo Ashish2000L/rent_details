@@ -42,6 +42,8 @@ import java.util.Objects;
 
 public class volleynotificationservice extends Service {
 
+    //this is not used in any file right not, please leave this as it is and i kept this only for the refrence
+
     private Handler handler = new Handler();
     public static final String TAG = "servicefilenames";
     private static int nums=1;public static final  String shared_pref="shared_prefs";
@@ -319,8 +321,8 @@ public class volleynotificationservice extends Service {
         super.onDestroy();
         Log.d(TAG, "onDestroy ");
 
-        Intent brodcastintent = new Intent();
-        brodcastintent.setAction("restartservice");
+        Intent brodcastintent = new Intent(Intent.ACTION_BOOT_COMPLETED);
+        //brodcastintent.setAction("restartservice");
         brodcastintent.setClass(this,Restarter.class);
         this.sendBroadcast(brodcastintent);
     }
