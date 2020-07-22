@@ -9,16 +9,20 @@ import androidx.core.content.FileProvider;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.Dialog;
 import android.app.DownloadManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
+import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
@@ -34,9 +38,13 @@ import android.webkit.WebViewClient;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.AuthFailureError;
+import com.android.volley.DefaultRetryPolicy;
+import com.android.volley.NetworkResponse;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
+import com.android.volley.RetryPolicy;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.StringRequest;
@@ -57,6 +65,9 @@ import org.json.JSONObject;
 
 import java.io.File;
 import java.net.URI;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
 
 import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
 import static java.lang.Thread.sleep;
@@ -72,14 +83,19 @@ public class splash extends AppCompatActivity {
     private Uri path;
     private Context context;
     private DownloadManager downloadManager;
-    long download;
+    long download,contentlength;
     TextView versions,status;
-    private String TAG = "Downloadingfiles";
+    private String TAG = "Downloadingfiles",SHARED_PREFS="isfirsttime",ISRUNNINGFILRSTTIME="isrunninfirsttime";
+    Dialog popupdialog;
+    String manufacturer,respomessage;
+    String urls="https://rentdetails.000webhostapp.com/checkforautostartpermission.php";
+    SharedPreferences sharedPreferences;
+    TextView popupmessage;
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
-        getSupportActionBar().hide();
+        Objects.requireNonNull(getSupportActionBar()).hide();
         setContentView(R.layout.activity_splash);
 
         firebaseRemoteConfig = FirebaseRemoteConfig.getInstance();
@@ -87,30 +103,72 @@ public class splash extends AppCompatActivity {
                 .setDeveloperModeEnabled(true).build(); //.setDeveloperModeEnabled(BuildConfig.DEBUG)
         firebaseRemoteConfig.setConfigSettings(configSettings);
         firebaseRemoteConfig.setDefaults(R.xml.remote_config_defaults);
+        popupdialog = new Dialog(splash.this);
 
+        sharedPreferences = getSharedPreferences(SHARED_PREFS,MODE_PRIVATE);
         versions = findViewById(R.id.version);
         status = findViewById(R.id.status);
         versions.setText(BuildConfig.VERSION_NAME);
         webView = findViewById(R.id.webview);
+        popupmessage = findViewById(R.id.popupmessage);
 
-        status.setText("Checking for Internet connection...");
-        if(checkConnection()) {
-            getdetails();
-        }else{
+        Log.d(TAG, "onCreate: board "+Build.BOARD);
+        Log.d(TAG, "onCreate: bootloader "+Build.BOOTLOADER);
+        Log.d(TAG, "onCreate: brand "+Build.BRAND);
+        Log.d(TAG, "onCreate: device "+Build.DEVICE);
+        Log.d(TAG, "onCreate: display "+Build.DISPLAY);
+        Log.d(TAG, "onCreate: fingerprint "+Build.FINGERPRINT);
+        Log.d(TAG, "onCreate: hardware "+Build.HARDWARE);
+        Log.d(TAG, "onCreate: host "+Build.HOST);
+        Log.d(TAG, "onCreate: id "+Build.ID);
+        Log.d(TAG, "onCreate: model "+Build.MODEL);
+        Log.d(TAG, "onCreate: product "+Build.PRODUCT);
+        Log.d(TAG, "onCreate: tags "+Build.TAGS);
+        Log.d(TAG, "onCreate: type "+Build.TYPE);
+        Log.d(TAG, "onCreate: user "+Build.USER);
+        Log.d(TAG, "onCreate: time "+Build.TIME);
+        Log.d(TAG, "onCreate: serial "+Build.SERIAL);
+        Log.d(TAG, "onCreate: radio version"+Build.getRadioVersion());
+
+
+        manufacturer = Build.MANUFACTURER;
+
+        if (checkConnection()) {
+        if(sharedPreferences.getBoolean(ISRUNNINGFILRSTTIME,true)) {
+            new autostartpermissions().execute(urls,manufacturer);
+            //popup();
+        }else {
+
+            status.setText("Checking for Internet connection...");
+
+            Toast.makeText(this, "You are using " + manufacturer + " mobile", Toast.LENGTH_LONG).show();
+
+                getdetails();
+            }
+        }else {
             status.setText("Internet connection Required!!");
             new Thread(new Runnable() {
                 @Override
                 public void run() {
-                    Intent intent = new Intent(splash.this,login.class);
+                    Intent intent = new Intent(splash.this, login.class);
                     try {
                         Thread.sleep(3000);
                         startActivity(intent);
+                        finish();
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
                 }
             }).start();
         }
+    }
+
+    public void popup(){
+        popupdialog.setContentView(R.layout.popupmessage);
+        popupdialog.setCancelable(false);
+        popupdialog.show();
+
+
     }
 
     private void getdetails()
@@ -270,7 +328,9 @@ public class splash extends AppCompatActivity {
                 public void onDownloadStart(String url, String userAgent, String contentDisposition, String mimetype, long contentLength) {
                     Log.d(TAG, "url "+url);
                     Log.d(TAG, "useragent "+userAgent);
-                    DownloadFile(url,userAgent,contentDisposition,mimetype,contentLength);
+                    contentlength=contentLength;
+                    downloadupdatedapk downloadupdatedapk = new downloadupdatedapk();
+                    downloadupdatedapk.execute(url,userAgent,contentDisposition,mimetype);
                 }
             });
         }else{
@@ -306,7 +366,9 @@ public class splash extends AppCompatActivity {
                     public void onDownloadStart(String url, String userAgent, String contentDisposition, String mimetype, long contentLength) {
                         Log.d(TAG, "url "+url);
                         Log.d(TAG, "useragent "+userAgent);
-                        DownloadFile(url,userAgent,contentDisposition,mimetype,contentLength);
+                        contentlength=contentLength;
+                        downloadupdatedapk downloadupdatedapk = new downloadupdatedapk();
+                        downloadupdatedapk.execute(url,userAgent,contentDisposition,mimetype);
                     }
                 });
             }else{
@@ -354,27 +416,12 @@ public class splash extends AppCompatActivity {
         downloadManager = (DownloadManager) getSystemService(DOWNLOAD_SERVICE);
         assert downloadManager != null;
         download = downloadManager.enqueue(request);
-
-        Toast.makeText(splash.this, "Downloading....", Toast.LENGTH_LONG).show();
+        Log.d(TAG, "DownloadFile: download"+download);
 
         status.setText("Downloading update ...");
 
         File file_dir = new File("/storage/emulated/0/Download/", URLUtil.guessFileName(url, contentDisposition, mimetype));
         path = FileProvider.getUriForFile(context, BuildConfig.APPLICATION_ID + ".provider", file_dir);
-
-        Log.d(TAG, "path "+path);
-        BroadcastReceiver new_brpdcast = new BroadcastReceiver() {
-            @Override
-            public void onReceive(final Context context, Intent intent) {
-                final Intent pdfOpenintent = new Intent(Intent.ACTION_VIEW);
-                pdfOpenintent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                pdfOpenintent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-                pdfOpenintent.setDataAndType(path, downloadManager.getMimeTypeForDownloadedFile(download));
-                context.startActivity(pdfOpenintent);
-                context.unregisterReceiver(this);
-            }
-        };
-        registerReceiver(new_brpdcast, new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE));
 
     }
 
@@ -400,6 +447,118 @@ public class splash extends AppCompatActivity {
 
             }
         return false;
+        }
+
+    public void closeonclick(View view) {
+        popupdialog.dismiss();
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putBoolean(ISRUNNINGFILRSTTIME,false);
+        editor.apply();
+        getdetails();
+    }
+
+    public void remindmelater(View view) {
+
+        Toast.makeText(this, "remind me later", Toast.LENGTH_SHORT).show();
+        popupdialog.dismiss();
+        getdetails();
+    }
+
+    public void message(View view) {
+
+        TextView popup =view.findViewById(R.id.popupmessage);
+        popup.setText(respomessage);
+
+    }
+
+
+    public class downloadupdatedapk extends AsyncTask<String,Void,Void>{
+
+            @Override
+            protected void onPreExecute() {
+                Toast.makeText(splash.this, "Downloading...", Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            protected Void doInBackground(String... strings) {
+                String url = strings[0],useragent=strings[1],contentdepisition = strings[2],mimetype = strings[3];
+
+                DownloadFile(url,useragent,contentdepisition,mimetype,contentlength);
+
+                return null;
+            }
+
+            @Override
+            protected void onPostExecute(Void aVoid) {
+                Log.d(TAG, "path "+path);
+                BroadcastReceiver new_brpdcast = new BroadcastReceiver() {
+                    @Override
+                    public void onReceive(final Context context, Intent intent) {
+                        Log.d(TAG, "onReceive: into the reciver");
+                        final Intent pdfOpenintent = new Intent(Intent.ACTION_VIEW);
+                        pdfOpenintent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                        pdfOpenintent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                        pdfOpenintent.setDataAndType(path, downloadManager.getMimeTypeForDownloadedFile(download));
+                        Log.d(TAG, "onReceive: "+downloadManager.getMimeTypeForDownloadedFile(download));
+                        Log.d(TAG, "onReceive: uri"+downloadManager.getUriForDownloadedFile(download));
+                        context.startActivity(pdfOpenintent);
+                        context.unregisterReceiver(this);
+                    }
+                };
+                registerReceiver(new_brpdcast, new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE));
+            }
+        }
+
+        public class autostartpermissions extends AsyncTask<String,Void,Void>{
+
+            @Override
+            protected Void doInBackground(String... strings) {
+
+                String url = strings[0];
+                final String manufacturarname=strings[1].toLowerCase();
+                Log.d(TAG, "doInBackground: manufacturer "+manufacturarname);
+                Log.d(TAG, "doInBackground: url "+url);
+
+                final StringRequest request = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+
+                        Log.d(TAG, "onResponse: requestvalue"+response);
+                        respomessage=response;
+                        if(!response.equals("")) {
+                            popup();
+                        }
+                    }
+                }, new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        NetworkResponse networkResponse = error.networkResponse;
+                        Log.d(TAG, "onErrorResponse: networktime"+networkResponse.networkTimeMs);
+                        Log.d(TAG, "onErrorResponse: statuscode"+networkResponse.statusCode);
+                        Log.d(TAG, "onErrorResponse: datalength"+networkResponse.data.length);
+                        Log.d(TAG, "onErrorResponse: allheadersize"+networkResponse.allHeaders.size());
+                        Log.d(TAG, "onErrorResponse: header"+networkResponse.headers);
+
+                    }
+                }){
+
+                    @Override
+                    protected Map<String, String> getParams() throws AuthFailureError {
+
+                        Map<String,String> params = new HashMap<String, String>();
+
+                        params.put("manufacture",manufacturarname);
+
+                        return params;
+                    }
+                };
+
+                request.setRetryPolicy(new DefaultRetryPolicy(2 * 60 * 1000, DefaultRetryPolicy.DEFAULT_MAX_RETRIES, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
+                RequestQueue queue = Volley.newRequestQueue(splash.this);
+                queue.add(request);
+
+                return null;
+            }
         }
 }
 
