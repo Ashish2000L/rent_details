@@ -2,15 +2,24 @@ package com.example.rent_details;
 
 public class ListOfRenters {
 
-    private String name,username,date,password,lastupdate,category;
+    private String name,username,date,password,lastupdate,category,profileimage;
 
-    public ListOfRenters(String name, String username, String date, String lastupdate, String password, String category) {
+    public ListOfRenters(String name, String username, String date, String lastupdate, String password, String category,String profileimage) {
         this.name = name;
         this.username = username;
         this.date = date;
         this.password = password;
         this.lastupdate = lastupdate;
         this.category = category;
+        this.profileimage = profileimage;
+    }
+
+    public String getProfileimage() {
+        return profileimage;
+    }
+
+    public void setProfileimage(String profileimage) {
+        this.profileimage = profileimage;
     }
 
     public String getUsername() {
