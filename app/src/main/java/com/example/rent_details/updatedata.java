@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
@@ -29,13 +30,15 @@ public class updatedata extends AppCompatActivity {
 
     RadioGroup radioGroup_bill,radioGroup_rent;
     RadioButton radioButton_rent,radioButton_bill;
-    String bill,rent,username,dates, amounts, units;
+    String bill,rent,username,dates, amounts, units,notees="";
     TextView date_tv;
-    EditText amount, unit;
+    EditText amount, unit,note;
     private int position;
     private String url="https://rentdetails.000webhostapp.com/UpdateDetail.php";
     ProgressDialog progressDialog;
     Button btn_update;
+    CheckBox notecheckbox;
+    int category;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -46,15 +49,32 @@ public class updatedata extends AppCompatActivity {
         amount = findViewById(R.id.amountss);
         unit = findViewById(R.id.unitss);
         btn_update = findViewById(R.id.btn_update);
+        note = findViewById(R.id.notetexts);
+        notecheckbox = findViewById(R.id.checkboxfornotes);
+        radioButton_rent = findViewById(R.id.radio_paid);
+        radioButton_bill = findViewById(R.id.radio_paid_bill);
+
 
         Intent intent = getIntent();
         position = intent.getExtras().getInt("position");
         username=intent.getStringExtra("username");
+        category = intent.getIntExtra("category",0);
         Objects.requireNonNull(getSupportActionBar()).setTitle(username);
         date_tv.setText(showdetails.renterArrayList.get(position).getDate());
         amount.setText(showdetails.renterArrayList.get(position).getAmount());
         unit.setText(showdetails.renterArrayList.get(position).getUnit());
         dates=showdetails.renterArrayList.get(position).getDate();
+        String notes = showdetails.renterArrayList.get(position).getNote();
+        if(!notes.equals("")){
+            notecheckbox.setChecked(true);
+            note.setVisibility(View.VISIBLE);
+            note.setText(notes);
+
+        }else{
+            notecheckbox.setChecked(false);
+            note.setVisibility(View.GONE);
+        }
+
     }
 
     public void radio_rent(View view){
@@ -84,14 +104,15 @@ public class updatedata extends AppCompatActivity {
             Toast.makeText(this, "Amount cannot be empty", Toast.LENGTH_LONG).show();
         }else if(unit.getText().toString().trim().equals("")){
             Toast.makeText(this,"Unit cannot be empty",Toast.LENGTH_LONG).show();
-        }if(rent.trim().isEmpty()){
+        }if(!radioButton_rent.isChecked()){
             Toast.makeText(this, "Rent status required", Toast.LENGTH_SHORT).show();
-        }else if(bill.trim().isEmpty()){
+        }else if(!radioButton_bill.isChecked()){
             Toast.makeText(this, "Bill status required", Toast.LENGTH_SHORT).show();
         }else{
             progressDialog.show();
             amounts = amount.getText().toString().trim();
             units = unit.getText().toString();
+            notees = note.getText().toString();
             StringRequest request = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
                 @Override
                 public void onResponse(String response) {
@@ -126,6 +147,8 @@ public class updatedata extends AppCompatActivity {
                     params.put("date",dates);
                     params.put("username",username);
                     params.put("units", units);
+                    params.put("note", notees);
+
                     return params;
                 }
             };
@@ -135,5 +158,23 @@ public class updatedata extends AppCompatActivity {
             requestQueue.add(request);
         }
 
+    }
+
+    public void takenotehere(View view) {
+
+        if(notecheckbox.isChecked()){
+            note.setVisibility(View.VISIBLE);
+        }else{
+            note.setVisibility(View.GONE);
+        }
+
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        startActivity(new Intent(updatedata.this,showdetails.class)
+        .putExtra("username",username)
+        .putExtra("category",category));
     }
 }
