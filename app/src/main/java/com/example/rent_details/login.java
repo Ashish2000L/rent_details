@@ -1,15 +1,23 @@
 package com.example.rent_details;
 
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.ActivityManager;
 import android.app.ProgressDialog;
+import android.app.job.JobInfo;
+import android.app.job.JobScheduler;
+import android.content.ComponentName;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -24,8 +32,10 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.google.android.material.snackbar.BaseTransientBottomBar;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -37,13 +47,15 @@ public class login extends AppCompatActivity {
     public static final  String shared_pref="shared_prefs";
     public static  final String user="username";
     public static final String pass="password";
-    public static final String TAG="servicefilenames";
+    public static final String TAG="forgroundserviceexample";
+    public static final String isrunningfirsttime= "isfirsttime",ispermissiongiven="ispermissiongiven";
     Button btnlogin;
     volleynotificationservice volleynotificationservices = new volleynotificationservice();
     forgroundservice forgroundservice = new forgroundservice();
+    jobschedularservice jobschedularservice = new jobschedularservice();
+    boolean status = false;
 
     //here category 1 means that the user is renter and 0 is that user is admin
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -56,6 +68,11 @@ public class login extends AppCompatActivity {
         SharedPreferences sharedPreferences = getSharedPreferences(shared_pref,MODE_PRIVATE);
         ed_username.setText(sharedPreferences.getString(user, ""));
         ed_password.setText(sharedPreferences.getString(pass, ""));
+
+        if(!sharedPreferences.getBoolean(ispermissiongiven,false)){
+            autostartpermissions();
+        }
+
         btnlogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -66,6 +83,14 @@ public class login extends AppCompatActivity {
                 }
             }
         });
+    }
+
+    public void autostartpermissions(){
+        SharedPreferences sharedPreferences1 = getSharedPreferences(shared_pref,MODE_PRIVATE);
+        SharedPreferences.Editor editor1 = sharedPreferences1.edit();
+        editor1.putBoolean(ispermissiongiven,true);
+        editor1.apply();
+        autostarthandler.getInstance().getAutoStartPermission(this);
     }
 
     public void shared_prefs()
@@ -128,8 +153,22 @@ public class login extends AppCompatActivity {
                         ed_username.setText("");
                         ed_password.setText("");
                         shared_prefs();
-                        if(!ismyservicerunning(forgroundservice.getClass())){
-                            startService(new Intent(login.this,forgroundservice.class));
+                        if(!ismyservicerunning(jobschedularservice.getClass())){
+                            //startService(new Intent(login.this,forgroundservice.class));
+                            ComponentName componentName = new ComponentName(login.this,jobschedularservice.getClass());
+                            JobInfo info = new JobInfo.Builder(123,componentName)
+                                    .setRequiredNetworkType(JobInfo.NETWORK_TYPE_ANY)
+                                    .setPersisted(true)
+                                    .setPeriodic(15*60*1000)
+                                    .build();
+                            JobScheduler scheduler = (JobScheduler)getSystemService(JOB_SCHEDULER_SERVICE);
+                            assert scheduler != null;
+                            int resultcode=scheduler.schedule(info);
+                            if(resultcode==JobScheduler.RESULT_SUCCESS){
+                                Log.d(TAG, "job scheduling successful");
+                            }else{
+                                Log.d(TAG, "jobscheduler failed");
+                            }
                         }
 //                        if(!ismyservicerunning(volleynotificationservices.getClass())){
 //                            startService(new Intent(login.this,volleynotificationservice.class));
@@ -143,9 +182,27 @@ public class login extends AppCompatActivity {
                         ed_username.setText("");
                         ed_password.setText("");
                         shared_prefs();
-                        if(!ismyservicerunning(volleynotificationservices.getClass())){
-                            startService(new Intent(login.this,volleynotificationservice.class));
+                        if(!ismyservicerunning(jobschedularservice.getClass())){
+                            //startService(new Intent(login.this,forgroundservice.class));
+                            ComponentName componentName = new ComponentName(login.this,jobschedularservice.getClass());
+                            JobInfo info = new JobInfo.Builder(123,componentName)
+                                    .setRequiredNetworkType(JobInfo.NETWORK_TYPE_ANY)
+                                    .setPersisted(true)
+                                    .setPeriodic(15*60*1000)
+                                    .build();
+                            JobScheduler scheduler = (JobScheduler)getSystemService(JOB_SCHEDULER_SERVICE);
+                            assert scheduler != null;
+                            int resultcode=scheduler.schedule(info);
+                            if(resultcode==JobScheduler.RESULT_SUCCESS){
+                                Log.d(TAG, "job scheduling successful");
+                            }else{
+                                Log.d(TAG, "jobscheduler failed");
+                            }
                         }
+
+//                        if(!ismyservicerunning(volleynotificationservices.getClass())){
+//                            startService(new Intent(login.this,volleynotificationservice.class));
+//                        }
                         startActivity(new Intent(login.this,showdetails.class)
                         .putExtra("username",str_username)
                         .putExtra("category",1));
@@ -187,12 +244,6 @@ public class login extends AppCompatActivity {
         startActivity(new Intent(getApplicationContext(), register.class));
         finish();
     }
-
-//    @Override
-//    protected void onDestroy() {
-//        stopService(new Intent(this,volleynotificationservice.class));
-//        super.onDestroy();
-//    }
 
     //this is to the check if the service is running or not...
     private boolean ismyservicerunning(Class<?> serviceclass){
