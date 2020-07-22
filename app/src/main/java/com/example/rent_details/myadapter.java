@@ -9,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -37,7 +38,8 @@ public class myadapter extends ArrayAdapter<renter> {
     public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
 
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.custom_list_item,null,true);
-        LinearLayout linearLayout = view.findViewById(R.id.linearlayout);
+        //LinearLayout linearLayout = view.findViewById(R.id.linearlayout);
+        ImageView imageView = view.findViewById(R.id.statusofrent);
         TextView tv_date=view.findViewById(R.id.txt_date);
         TextView tv_amount = view.findViewById(R.id.txt_amount);
 
@@ -48,12 +50,16 @@ public class myadapter extends ArrayAdapter<renter> {
         {
             if(arraylistrenter.get(position).getBill().equals("Paid"))
             {
-                linearLayout.setBackgroundResource(R.drawable.gradient);
+
+                imageView.setImageResource(R.drawable.check);
+                //linearLayout.setBackgroundResource(R.drawable.gradient);
             }else{
-                linearLayout.setBackgroundResource(R.drawable.gradient1);
+                imageView.setImageResource(R.drawable.clear);
+                //linearLayout.setBackgroundResource(R.drawable.gradient1);
             }
         }else{
-            linearLayout.setBackgroundResource(R.drawable.gradient1);
+            imageView.setImageResource(R.drawable.clear);
+            //linearLayout.setBackgroundResource(R.drawable.gradient1);
         }
 
         return view;

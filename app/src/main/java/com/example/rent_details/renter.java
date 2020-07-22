@@ -4,14 +4,14 @@ package com.example.rent_details;
 
 public class renter {
 
-    private String date,amount,unit,rent,bill,addedon,lastupdate;
+    private String date,amount,unit,rent,bill,addedon,lastupdate,note;
 
 
     public renter() {
 
     }
 
-    public renter( String date, String amount, String unit, String rent, String bill, String addedon, String lastupdate) {
+    public renter( String date, String amount, String unit, String rent, String bill, String addedon, String lastupdate,String note) {
 
         this.date = date;
         this.amount = amount;
@@ -20,6 +20,15 @@ public class renter {
         this.bill = bill;
         this.addedon = addedon;
         this.lastupdate = lastupdate;
+        this.note = note;
+    }
+
+    public String getNote() {
+        return note;
+    }
+
+    public void setNote(String note) {
+        this.note = note;
     }
 
     public String getDate() {
