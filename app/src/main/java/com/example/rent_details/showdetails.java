@@ -8,7 +8,9 @@ import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -41,9 +43,11 @@ public class showdetails extends AppCompatActivity {
     public static ArrayList<renter> renterArrayList = new ArrayList<>();
     String url ="https://rentdetails.000webhostapp.com/retrive.php";
     renter renter;
-    String st_username;
+    String st_username,byadmin;
     ProgressDialog progressDialog;
     SwipeRefreshLayout swipeRefreshLayout;
+    public static final  String shared_pref="shared_prefs";
+    public static  final String user="username";
     //ListOfRentersForAdmin listOfRentersForAdmin;
     private int category;
 
@@ -82,12 +86,14 @@ public class showdetails extends AppCompatActivity {
                             switch (i) {
                                 case 0:
                                     startActivity(new Intent(getApplicationContext(), viewdata.class).putExtra(
-                                            "position", position));
+                                            "position", position)
+                                    .putExtra("category",category));
                                     break;
                                 case 1:
                                     startActivity(new Intent(getApplicationContext(), updatedata.class)
                                             .putExtra("position", position)
-                                            .putExtra("username", st_username));
+                                            .putExtra("username", st_username)
+                                    .putExtra("category",category));
                                     break;
                                 case 2:
                                     deletedata(renterArrayList.get(position).getDate());
@@ -139,11 +145,13 @@ public class showdetails extends AppCompatActivity {
                             .putExtra("username", st_username));
                     break;
                 case R.id.renter_detail:
+                    //this will execute when admin try to view renter profile
                     startActivity(new Intent(getApplicationContext(), details_all.class)
                     .putExtra("category",0)
                     .putExtra("username",st_username));
                     break;
                 case R.id.renter_setting:
+                    //this will execute only when renter is logged in
                     startActivity(new Intent(getApplicationContext(), details_all.class)
                             .putExtra("category",1)
                             .putExtra("username",st_username));
@@ -179,6 +187,7 @@ public class showdetails extends AppCompatActivity {
                             {
                                 for(int i =jsonArray.length()-1 ; i>=0;i--)
                                 {
+                                    String note="";
                                     JSONObject object = jsonArray.getJSONObject(i);
                                     String date=object.getString("date");
                                     String amount=object.getString("amount");
@@ -187,8 +196,9 @@ public class showdetails extends AppCompatActivity {
                                     String bill=object.getString("bill");
                                     String addedon = object.getString("addedon");
                                     String lastupdate = object.getString("lastupdate");
+                                    note = object.getString("note");
 
-                                    renter = new renter(date,amount,units,rent,bill,addedon,lastupdate);
+                                    renter = new renter(date,amount,units,rent,bill,addedon,lastupdate,note);
                                     renterArrayList.add(renter);
                                     myadapter.notifyDataSetChanged();
 
@@ -281,8 +291,16 @@ public class showdetails extends AppCompatActivity {
     }
 
     @Override
-    protected void onDestroy() {
-            stopService(new Intent(this, volleynotificationservice.class));
-            super.onDestroy();
+    public void onBackPressed() {
+        super.onBackPressed();
+        SharedPreferences sharedPreferences = getSharedPreferences(shared_pref,MODE_PRIVATE);
+        if(category==0) {
+            renterArrayList.clear();
+            startActivity(new Intent(showdetails.this,ListOfRentersForAdmin.class)
+            .putExtra("username",sharedPreferences.getString(user,"")));
+        }else{
+            finishAffinity();
+            //Toast.makeText(this, "cannot go back", Toast.LENGTH_SHORT).show();
+        }
     }
 }
