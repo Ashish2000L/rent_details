@@ -43,7 +43,7 @@ public class ListOfRentersForAdmin extends AppCompatActivity {
     ArrayList<ListOfRenters> listOfRentersArrayList = new ArrayList<>();
     TextView details_of_server;
     ListOfRenters listOfRenters;
-    String byadmin,welcomemsg;
+    String byadmin,welcomemsg,customurl;
     String url="https://rentdetails.000webhostapp.com/ListOfRenterRetrive.php";
     ProgressDialog progressDialog;
     SwipeRefreshLayout swipeRefreshLayout;
@@ -52,7 +52,7 @@ public class ListOfRentersForAdmin extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_list_of_renters_for_admin);
 
-        Intent intent =getIntent();
+        final Intent intent =getIntent();
         byadmin = intent.getStringExtra("username");
 
         welcomemsg = "Welcome "+ byadmin;
@@ -164,9 +164,11 @@ public class ListOfRentersForAdmin extends AppCompatActivity {
                                 String password = object.getString("password");
                                 String category = object.getString("category");
                                 String lastupdated = object.getString("lastupdate");
+                                String profileimage = object.getString("profileimage");
 
+                                customurl = "https://rentdetails.000webhostapp.com/images/"+profileimage;
                                 //Toast.makeText(ListOfRentersForAdmin.this, usernames, Toast.LENGTH_LONG).show();
-                                listOfRenters = new ListOfRenters(name, usernames, date_of_joining,lastupdated,password,category);
+                                listOfRenters = new ListOfRenters(name, usernames, date_of_joining,lastupdated,password,category,customurl);
                                 listOfRentersArrayList.add(listOfRenters);
                                 listOfRenterAdapter.notifyDataSetChanged();
                             }
@@ -183,8 +185,9 @@ public class ListOfRentersForAdmin extends AppCompatActivity {
                     public void onErrorResponse(VolleyError error) {
                         listView.setVisibility(View.GONE);
                         details_of_server.setVisibility(View.VISIBLE);
-                        details_of_server.setText(error.getMessage());
-                        Toast.makeText(ListOfRentersForAdmin.this, error.getMessage(), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(ListOfRentersForAdmin.this, "Connection Failed!!", Toast.LENGTH_SHORT).show();
+//                        details_of_server.setText(error.getMessage());
+                        //Toast.makeText(ListOfRentersForAdmin.this, error.getMessage(), Toast.LENGTH_SHORT).show();
                     }
                 }){
             @Override
@@ -259,9 +262,9 @@ public class ListOfRentersForAdmin extends AppCompatActivity {
 
     }
 
+
     @Override
-    protected void onDestroy() {
-        stopService(new Intent(this,volleynotificationservice.class));
-        super.onDestroy();
+    public void onBackPressed() {
+        finishAffinity();
     }
 }
