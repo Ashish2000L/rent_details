@@ -6,7 +6,9 @@ import androidx.swiperefreshlayout.widget.CircularProgressDrawable;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.drawable.Drawable;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.text.InputType;
@@ -143,6 +145,7 @@ public class details_all extends AppCompatActivity {
                         {
                             e.printStackTrace();
                             Toast.makeText(details_all.this, e.getMessage(), Toast.LENGTH_LONG).show();
+                            new erroinfetch().execute("json error: "+e.getMessage());
                         }
                         //Toast.makeText(details_all.this, names, Toast.LENGTH_SHORT).show();
                         customurl = "https://rentdetails.000webhostapp.com/images/"+imgname;
@@ -159,6 +162,9 @@ public class details_all extends AppCompatActivity {
             public void onErrorResponse(VolleyError error) {
                 progressDialog.dismiss();
                 Toast.makeText(details_all.this, "error: "+error.getMessage(), Toast.LENGTH_SHORT).show();
+                if(error.networkResponse!=null){
+                    new erroinfetch().execute("status code :"+error.networkResponse.statusCode);
+                }
             }
         }){
             @Override
@@ -196,11 +202,14 @@ public class details_all extends AppCompatActivity {
                 .listener(new RequestListener<Drawable>() {
                     @Override
                     public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
-                        Toast.makeText(details_all.this, e.getMessage(), Toast.LENGTH_LONG).show();
+                        Toast.makeText(details_all.this, "fail to load image", Toast.LENGTH_LONG).show();
                         circularProgressDrawable.stop();
                         Log.d(TAG, "onLoadFailed: "+e.getMessage());
                         relativeLayout.setVisibility(View.GONE);
                         profileimage.setVisibility(View.GONE);
+                        if(e.getMessage()!=null){
+                            new erroinfetch().execute("image loading failed: "+e.getMessage());
+                        }
                         return false;
                     }
 
@@ -349,5 +358,53 @@ public class details_all extends AppCompatActivity {
                 .putExtra("category",id)
                 .putExtra("username",usernames));
             }
+    }
+
+
+    public class erroinfetch extends AsyncTask<String,Void,Void>{
+
+        public static final  String shared_pref="shared_prefs";
+        public static  final String user="username";
+        public String loginusername;
+        private String errorurl="https://rentdetails.000webhostapp.com/error_in_app.php";
+        private String TAG="errorfinding";
+        private String classname="detail_all: ";
+
+        @Override
+        protected void onPreExecute() {
+            SharedPreferences sharedPreferences = getSharedPreferences(shared_pref,MODE_PRIVATE);
+            loginusername=sharedPreferences.getString(user,"");
+        }
+
+
+        @Override
+        protected Void doInBackground(String... strings) {
+
+            final String errors=strings[0];
+
+            StringRequest request = new StringRequest(Request.Method.POST, errorurl, new Response.Listener<String>() {
+                @Override
+                public void onResponse(String response) {
+
+                }
+            }, new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError error) {
+                    Log.d(TAG, "onErrorResponse: ");
+                }
+            }){
+                @Override
+                protected Map<String, String> getParams() throws AuthFailureError {
+                    Map<String,String> params = new HashMap<String, String>();
+                    params.put("username",loginusername);
+                    params.put("error",classname+errors);
+                    return params;
+                }
+            };
+            RequestQueue queue = Volley.newRequestQueue(details_all.this);
+            queue.add(request);
+
+            return null;
+        }
     }
 }

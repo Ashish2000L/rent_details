@@ -4,7 +4,10 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -21,6 +24,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.karumi.dexter.listener.single.DialogOnDeniedPermissionListener;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -134,6 +138,9 @@ public class updatedata extends AppCompatActivity {
                 public void onErrorResponse(VolleyError error) {
                     progressDialog.dismiss();
                     Toast.makeText(updatedata.this, error.getMessage(), Toast.LENGTH_SHORT).show();
+                    if(String.valueOf(error.networkResponse.statusCode)!=null){
+                        new erroinfetch().execute("status code: "+error.networkResponse.statusCode);
+                    }
                 }
             }
             ) {
@@ -176,5 +183,53 @@ public class updatedata extends AppCompatActivity {
         startActivity(new Intent(updatedata.this,showdetails.class)
         .putExtra("username",username)
         .putExtra("category",category));
+    }
+
+
+    public class erroinfetch extends AsyncTask<String,Void,Void>{
+
+        public static final  String shared_pref="shared_prefs";
+        public static  final String user="username";
+        public String loginusername;
+        private String errorurl="https://rentdetails.000webhostapp.com/error_in_app.php";
+        private String TAG="errorfinding";
+        private String classname="updatedata: ";
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            SharedPreferences sharedPreferences = getSharedPreferences(shared_pref,MODE_PRIVATE);
+            loginusername = sharedPreferences.getString(user,"");
+        }
+
+        @Override
+        protected Void doInBackground(String... strings) {
+
+            final String errors=strings[0];
+
+            StringRequest request = new StringRequest(Request.Method.POST, errorurl, new Response.Listener<String>() {
+                @Override
+                public void onResponse(String response) {
+
+                }
+            }, new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError error) {
+                    Log.d(TAG, "onErrorResponse: ");
+                }
+            }){
+                @Override
+                protected Map<String, String> getParams() throws AuthFailureError {
+                    Map<String,String> params = new HashMap<String, String>();
+                    params.put("username",loginusername);
+                    params.put("error",classname+errors);
+                    return params;
+                }
+            };
+            RequestQueue queue = Volley.newRequestQueue(updatedata.this);
+            queue.add(request);
+
+            return null;
+        }
     }
 }

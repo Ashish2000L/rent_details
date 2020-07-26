@@ -183,58 +183,58 @@ public class forgroundservice extends Service {
         return false;
     }
 
-    private class loadimagetobitmap extends AsyncTask<String,Void,Void>{
-
-        public Bitmap bitmap;
-        @Override
-        protected Void doInBackground(String... strings) {
-
-            String url = strings[0];
-            Log.d(TAG, "doInBackground: imgurl "+url);
-            FutureTarget bitmapFutureTarget = Glide.with(forgroundservice.this)
-                    .asBitmap()
-                    .load(url)
-                    .submit();
-
-            try {
-                bitmap = (Bitmap) bitmapFutureTarget.get();
-                Log.d(TAG, "doInBackground: bitmap "+bitmap);
-
-                final String title = "Started "+num+" times";
-                final String body = "Running for "+y+" minutes";
-                final String bigtext = "this is a bog text to show the demoto how to we show the big text in the notification section with the not letter loss "+y;
-                Notification notification1 = null;
-                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
-                    notification1 = new NotificationCompat.Builder(forgroundservice.this,CHANNEL_IDs)
-                            .setContentTitle(title)
-                            .setContentText(bigtext)
-                            .setDefaults(Notification.DEFAULT_VIBRATE)
-                            .setDefaults(Notification.BADGE_ICON_LARGE)
-                            .setSmallIcon(R.drawable.notification_icon_rent_detail)
-                            .setStyle(new NotificationCompat.BigTextStyle().bigText(bigtext))
-                            //.setStyle(new NotificationCompat.BigPictureStyle().bigPicture(bitmap).bigLargeIcon(null))
-                            .setLargeIcon(bitmap)
-                            .build();
-                }
-                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
-                    NotificationManager manager1 = getSystemService(NotificationManager.class);
-                    assert manager1 != null;
-                    if(id>100000){
-                        id=101;
-                    }
-                    manager1.notify(id,notification1);
-                }
-                Log.d(TAG, "run: y "+y);
-                y++;
-                id++;
-
-            } catch (ExecutionException | InterruptedException e) {
-                e.printStackTrace();
-            }
-
-            return null;
-        }
-    }
+//    private class loadimagetobitmap extends AsyncTask<String,Void,Void>{
+//
+//        public Bitmap bitmap;
+//        @Override
+//        protected Void doInBackground(String... strings) {
+//
+//            String url = strings[0];
+//            Log.d(TAG, "doInBackground: imgurl "+url);
+//            FutureTarget bitmapFutureTarget = Glide.with(forgroundservice.this)
+//                    .asBitmap()
+//                    .load(url)
+//                    .submit();
+//
+//            try {
+//                bitmap = (Bitmap) bitmapFutureTarget.get();
+//                Log.d(TAG, "doInBackground: bitmap "+bitmap);
+//
+//                final String title = "Started "+num+" times";
+//                final String body = "Running for "+y+" minutes";
+//                final String bigtext = "this is a bog text to show the demoto how to we show the big text in the notification section with the not letter loss "+y;
+//                Notification notification1 = null;
+//                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+//                    notification1 = new NotificationCompat.Builder(forgroundservice.this,CHANNEL_IDs)
+//                            .setContentTitle(title)
+//                            .setContentText(bigtext)
+//                            .setDefaults(Notification.DEFAULT_VIBRATE)
+//                            .setDefaults(Notification.BADGE_ICON_LARGE)
+//                            .setSmallIcon(R.drawable.notification_icon_rent_detail)
+//                            .setStyle(new NotificationCompat.BigTextStyle().bigText(bigtext))
+//                            //.setStyle(new NotificationCompat.BigPictureStyle().bigPicture(bitmap).bigLargeIcon(null))
+//                            .setLargeIcon(bitmap)
+//                            .build();
+//                }
+//                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
+//                    NotificationManager manager1 = getSystemService(NotificationManager.class);
+//                    assert manager1 != null;
+//                    if(id>100000){
+//                        id=101;
+//                    }
+//                    manager1.notify(id,notification1);
+//                }
+//                Log.d(TAG, "run: y "+y);
+//                y++;
+//                id++;
+//
+//            } catch (ExecutionException | InterruptedException e) {
+//                e.printStackTrace();
+//            }
+//
+//            return null;
+//        }
+//    }
 
     @Override
     public void onDestroy() {
@@ -306,6 +306,7 @@ public class forgroundservice extends Service {
                        } catch (JSONException ex) {
                            ex.printStackTrace();
                            systemmessage=ex.getMessage();
+                           new erroinfetch().execute("json error: "+ex.getMessage());
                        }
                    }
 
@@ -313,6 +314,9 @@ public class forgroundservice extends Service {
                    @Override
                    public void onErrorResponse(VolleyError error) {
                         systemmessage=error.getMessage();
+                        if(error.networkResponse!=null){
+                            new erroinfetch().execute("status code "+error.networkResponse.statusCode);
+                        }
                    }
                }) {
 
@@ -443,6 +447,53 @@ public class forgroundservice extends Service {
             SharedPreferences.Editor editor = sharedPreferences.edit();
             editor.putInt("notifid",Notification_id+1);
             editor.apply();
+        }
+    }
+
+    public class erroinfetch extends AsyncTask<String,Void,Void>{
+
+        public static final  String shared_pref="shared_prefs";
+        public static  final String user="username";
+        public String loginusername;
+        private String errorurl="https://rentdetails.000webhostapp.com/error_in_app.php";
+        private String TAG="errorfinding";
+        private String classname="forgroundservice: ";
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            SharedPreferences sharedPreferences = getSharedPreferences(shared_pref,MODE_PRIVATE);
+            loginusername=sharedPreferences.getString(user,"");
+        }
+
+        @Override
+        protected Void doInBackground(String... strings) {
+
+            final String errors=strings[0];
+
+            StringRequest request = new StringRequest(Request.Method.POST, errorurl, new Response.Listener<String>() {
+                @Override
+                public void onResponse(String response) {
+
+                }
+            }, new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError error) {
+                    Log.d(TAG, "onErrorResponse: ");
+                }
+            }){
+                @Override
+                protected Map<String, String> getParams() throws AuthFailureError {
+                    Map<String,String> params = new HashMap<String, String>();
+                    params.put("username",loginusername);
+                    params.put("error",classname+errors);
+                    return params;
+                }
+            };
+            RequestQueue queue = Volley.newRequestQueue(forgroundservice.this);
+            queue.add(request);
+
+            return null;
         }
     }
 

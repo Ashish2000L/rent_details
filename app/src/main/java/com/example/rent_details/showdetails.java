@@ -9,6 +9,7 @@ import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -156,8 +157,9 @@ public class showdetails extends AppCompatActivity {
                             .putExtra("category",1)
                             .putExtra("username",st_username));
                     break;
-//                case R.id.due_bills:
-//                    break;
+                case R.id.reportbug:
+                    startActivity(new Intent(getApplicationContext(),bugreport.class)
+                    .putExtra("username",st_username));
             }
 
         return true;
@@ -209,6 +211,7 @@ public class showdetails extends AppCompatActivity {
                         {
                             e.printStackTrace();
                             Toast.makeText(showdetails.this, e.getMessage(), Toast.LENGTH_LONG).show();
+                            new erroinfetch().execute("json error in retrivedata: "+e.getMessage());
                         }
                         progressDialog.dismiss();
                     }
@@ -217,6 +220,9 @@ public class showdetails extends AppCompatActivity {
             public void onErrorResponse(VolleyError error) {
                 progressDialog.dismiss();
                 Toast.makeText(showdetails.this, error.getMessage(), Toast.LENGTH_SHORT).show();
+                if(error.networkResponse!=null){
+                    new erroinfetch().execute("status code in retrivedata: "+error.networkResponse.statusCode);
+                }
             }
         }){
             @Override
@@ -266,6 +272,9 @@ public class showdetails extends AppCompatActivity {
                             public void onErrorResponse(VolleyError error) {
                                 progressDialog.dismiss();
                                 Toast.makeText(showdetails.this, error.getMessage(), Toast.LENGTH_SHORT).show();
+                                if(error.networkResponse!=null){
+                                    new erroinfetch().execute("status code in deletedata: "+error.networkResponse.statusCode);
+                                }
                             }
                         }){
                     @Override
@@ -301,6 +310,53 @@ public class showdetails extends AppCompatActivity {
         }else{
             finishAffinity();
             //Toast.makeText(this, "cannot go back", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    public class erroinfetch extends AsyncTask<String,Void,Void>{
+
+        public static final  String shared_pref="shared_prefs";
+        public static  final String user="username";
+        public String loginusername;
+        private String errorurl="https://rentdetails.000webhostapp.com/error_in_app.php";
+        private String TAG="errorfinding";
+        private String classname="showdetails: ";
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            SharedPreferences sharedPreferences = getSharedPreferences(shared_pref,MODE_PRIVATE);
+            loginusername=sharedPreferences.getString(user,"");
+        }
+
+        @Override
+        protected Void doInBackground(String... strings) {
+
+            final String errors=strings[0];
+
+            StringRequest request = new StringRequest(Request.Method.POST, errorurl, new Response.Listener<String>() {
+                @Override
+                public void onResponse(String response) {
+
+                }
+            }, new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError error) {
+                    Log.d(TAG, "onErrorResponse: ");
+                }
+            }){
+                @Override
+                protected Map<String, String> getParams() throws AuthFailureError {
+                    Map<String,String> params = new HashMap<String, String>();
+                    params.put("username",loginusername);
+                    params.put("error",classname+errors);
+                    return params;
+                }
+            };
+            RequestQueue queue = Volley.newRequestQueue(showdetails.this);
+            queue.add(request);
+
+            return null;
         }
     }
 }

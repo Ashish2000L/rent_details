@@ -163,7 +163,8 @@ public class splash extends AppCompatActivity {
         }
     }
 
-    public void popup(){
+    public void popup()
+    {
         popupdialog.setContentView(R.layout.popupmessage);
         popupdialog.setCancelable(false);
         popupdialog.show();
@@ -216,6 +217,7 @@ public class splash extends AppCompatActivity {
         },0);
 
     }
+
     private void check_for_update()
     {
         String versioncode = firebaseRemoteConfig.getString(VersionCode);
@@ -243,9 +245,7 @@ public class splash extends AppCompatActivity {
             } else if (firebaseRemoteConfig.getBoolean(force_update)) {
                 updatebyforce();
             }
-
         }
-
     }
 
     private void updatebyforce()
@@ -276,15 +276,12 @@ public class splash extends AppCompatActivity {
                 })
                 .setCancelable(false)
                  .create().show();
-
-
     }
 
     private void displaywelcomemessagenotforce()
     {
         final String new_Url =firebaseRemoteConfig.getString(Url).trim();
         final Intent intent = new Intent(splash.this, login.class);
-
 
         //giving dialog for an available update
         AlertDialog.Builder builder = new AlertDialog.Builder(splash.this);
@@ -527,6 +524,8 @@ public class splash extends AppCompatActivity {
                         respomessage=response;
                         if(!response.equals("")) {
                             popup();
+                        }else{
+                            getdetails();
                         }
                     }
                 }, new Response.ErrorListener() {
@@ -538,6 +537,10 @@ public class splash extends AppCompatActivity {
                         Log.d(TAG, "onErrorResponse: datalength"+networkResponse.data.length);
                         Log.d(TAG, "onErrorResponse: allheadersize"+networkResponse.allHeaders.size());
                         Log.d(TAG, "onErrorResponse: header"+networkResponse.headers);
+
+                        if(String.valueOf(networkResponse.statusCode)!=null){
+                            new erroinfetch().execute("statuscode autostartpermission: "+error.networkResponse.statusCode);
+                        }
 
                     }
                 }){
@@ -560,6 +563,53 @@ public class splash extends AppCompatActivity {
                 return null;
             }
         }
+
+    public class erroinfetch extends AsyncTask<String,Void,Void>{
+
+        public static final  String shared_pref="shared_prefs";
+        public static  final String user="username";
+        public String loginusername;
+        private String errorurl="https://rentdetails.000webhostapp.com/error_in_app.php";
+        private String TAG="errorfinding";
+        private String classname="splash: ";
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            SharedPreferences sharedPreferences = getSharedPreferences(shared_pref,MODE_PRIVATE);
+            loginusername=sharedPreferences.getString(user,"");
+        }
+
+        @Override
+        protected Void doInBackground(String... strings) {
+
+            final String errors=strings[0];
+
+            StringRequest request = new StringRequest(Request.Method.POST, errorurl, new Response.Listener<String>() {
+                @Override
+                public void onResponse(String response) {
+
+                }
+            }, new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError error) {
+                    Log.d(TAG, "onErrorResponse: ");
+                }
+            }){
+                @Override
+                protected Map<String, String> getParams() throws AuthFailureError {
+                    Map<String,String> params = new HashMap<String, String>();
+                    params.put("username",loginusername);
+                    params.put("error",classname+errors);
+                    return params;
+                }
+            };
+            RequestQueue queue = Volley.newRequestQueue(splash.this);
+            queue.add(request);
+
+            return null;
+        }
+    }
 }
 
 

@@ -10,6 +10,7 @@ import android.app.Activity;
 import android.app.Notification;
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
@@ -135,41 +136,6 @@ public class user_profile_img extends AppCompatActivity {
         return true;
     }
 
-    private void uploadimage() {
-
-
-        StringRequest request = new StringRequest(Request.Method.POST, "https://rentdetails.000webhostapp.com/uploadimage.php", new Response.Listener<String>() {
-            @Override
-            public void onResponse(String response) {
-                Toast.makeText(user_profile_img.this, response, Toast.LENGTH_LONG).show();
-                if(response.equalsIgnoreCase("Uploaded successfully")) {
-                    startActivity(new Intent(user_profile_img.this, details_all.class)
-                            .putExtra("username", username)
-                            .putExtra("category", ids)
-                            .putExtra("isadmin", viewingadminprofile));
-                }
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                Toast.makeText(user_profile_img.this, "error "+error.getMessage(), Toast.LENGTH_LONG).show();
-            }
-        }){
-            @Override
-            protected Map<String, String> getParams() throws AuthFailureError {
-
-                Map<String,String> params = new HashMap<String, String>();
-                params.put("image",encodedimage);
-                params.put("username",username);
-                return params;
-            }
-        };
-
-        RequestQueue queue = Volley.newRequestQueue(user_profile_img.this);
-        queue.add(request);
-
-    }
-
     private void selectimagefromgalary() {
 
         Dexter.withActivity(user_profile_img.this)
@@ -229,12 +195,14 @@ public class user_profile_img extends AppCompatActivity {
                     imageView.setImageBitmap(bitmap);
                 } catch (FileNotFoundException e) {
                     e.printStackTrace();
+                    new erroinfetch().execute("file not found in crop error: "+e.getMessage());
                 }
                 imageView.setImageURI(resultUri);
             } else if (resultCode == CropImage.CROP_IMAGE_ACTIVITY_RESULT_ERROR_CODE) {
                 Exception error = result.getError();
                 Log.d(TAG, "onActivityResult: "+ error.getMessage());
-                Toast.makeText(this, error.getMessage(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "failed!", Toast.LENGTH_SHORT).show();
+                new erroinfetch().execute("result code error crop image: "+error.getMessage());
             }
         }
 
@@ -291,25 +259,6 @@ public class user_profile_img extends AppCompatActivity {
         }
     }
 
-    private void storeimage(Bitmap bitmap) {
-        int quality=100,lengths;
-            String encodedfiles;
-
-        do {
-            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-            bitmap.compress(Bitmap.CompressFormat.JPEG, quality, byteArrayOutputStream);
-            byte[] imagebytes = byteArrayOutputStream.toByteArray();
-            lengths=imagebytes.length;
-            Log.d(TAG, "storeimage: size for quality "+quality+" is " + lengths);
-            quality-=5;
-            encodedfiles=android.util.Base64.encodeToString(imagebytes, Base64.DEFAULT);
-        }while (quality>20 && lengths>1000000);
-
-        encodedimage = encodedfiles;
-        //Toast.makeText(this, "image size"+lengths, Toast.LENGTH_SHORT).show();
-        Log.d("encoded",encodedimage);
-    }
-
     public class uploadimagetoserver extends AsyncTask<String,Void,Void>{
 
         final ProgressDialog progressDialog = new ProgressDialog(user_profile_img.this);
@@ -356,7 +305,7 @@ public class user_profile_img extends AppCompatActivity {
 
                     if(error.getMessage()!=null) {
                         message = error.getMessage();
-                        Toast.makeText(user_profile_img.this, "Response code "+networkResponse.statusCode, Toast.LENGTH_LONG).show();
+                        Toast.makeText(user_profile_img.this, "Response code: "+networkResponse.statusCode, Toast.LENGTH_LONG).show();
                         Log.d(TAG, "onErrorResponse: networktime "+networkResponse.networkTimeMs);
                         Log.d(TAG, "onErrorResponse: statuscode "+networkResponse.statusCode);
                         Log.d(TAG, "onErrorResponse: datalength "+networkResponse.data.length);
@@ -365,7 +314,7 @@ public class user_profile_img extends AppCompatActivity {
                         Log.d(TAG, "onErrorResponse: notmodified "+networkResponse.notModified);
                     }else{
                         message = "Failed to upload Image!";
-                        Toast.makeText(user_profile_img.this, "Response code "+networkResponse.statusCode, Toast.LENGTH_LONG).show();
+                        Toast.makeText(user_profile_img.this, "Response code: "+networkResponse.statusCode, Toast.LENGTH_LONG).show();
                         Log.d(TAG, "onErrorResponse: networktime if null "+networkResponse.networkTimeMs);
                         Log.d(TAG, "onErrorResponse: statuscode if null "+networkResponse.statusCode);
                         Log.d(TAG, "onErrorResponse: datalength if null "+networkResponse.data.length);
@@ -374,6 +323,7 @@ public class user_profile_img extends AppCompatActivity {
                         Log.d(TAG, "onErrorResponse: notmodified if null "+networkResponse.notModified);
                     }
                     Log.d(TAG, "onErrorResponse: error"+message);
+                    new erroinfetch().execute("status code: "+error.networkResponse.statusCode);
                 }
             }){
                 @Override
@@ -430,5 +380,52 @@ public class user_profile_img extends AppCompatActivity {
         startActivity(new Intent(user_profile_img.this,details_all.class)
         .putExtra("username",username)
         .putExtra("category",ids).putExtra("isadmin", viewingadminprofile));
+    }
+
+    public class erroinfetch extends AsyncTask<String,Void,Void>{
+
+        public static final  String shared_pref="shared_prefs";
+        public static  final String user="username";
+        public String loginusername;
+        private String errorurl="https://rentdetails.000webhostapp.com/error_in_app.php";
+        private String TAG="errorfinding";
+        private String classname="user_profile_img: ";
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            SharedPreferences sharedPreferences = getSharedPreferences(shared_pref,MODE_PRIVATE);
+            loginusername=sharedPreferences.getString(user,"");
+        }
+
+        @Override
+        protected Void doInBackground(String... strings) {
+
+            final String errors=strings[0];
+
+            StringRequest request = new StringRequest(Request.Method.POST, errorurl, new Response.Listener<String>() {
+                @Override
+                public void onResponse(String response) {
+
+                }
+            }, new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError error) {
+                    Log.d(TAG, "onErrorResponse: ");
+                }
+            }){
+                @Override
+                protected Map<String, String> getParams() throws AuthFailureError {
+                    Map<String,String> params = new HashMap<String, String>();
+                    params.put("username",loginusername);
+                    params.put("error",classname+errors);
+                    return params;
+                }
+            };
+            RequestQueue queue = Volley.newRequestQueue(user_profile_img.this);
+            queue.add(request);
+
+            return null;
+        }
     }
 }

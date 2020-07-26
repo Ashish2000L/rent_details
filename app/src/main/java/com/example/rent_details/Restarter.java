@@ -32,8 +32,17 @@ public class Restarter extends BroadcastReceiver {
             //startService(new Intent(login.this,forgroundservice.class));
             if(Objects.equals(intent.getAction(), "android.intent.action.BOOT_COMPLETED")){
                 Log.d(TAG, "onReceive: booting is set in restart.java");
+                if(Build.VERSION.SDK_INT>=Build.VERSION_CODES.O) {
+                    context.startForegroundService(new Intent(context, forgroundservice.class));
+                }else{
+                    context.startService(new Intent(context,forgroundservice.class));
+                }
             }
-            context.startForegroundService(new Intent(context, forgroundservice.class));
+            if(Build.VERSION.SDK_INT>=Build.VERSION_CODES.O) {
+                context.startForegroundService(new Intent(context, forgroundservice.class));
+            }else{
+                context.startService(new Intent(context,forgroundservice.class));
+            }
 
 //            ComponentName componentName = new ComponentName(context, com.example.rent_details.jobschedularservice.class);
 //            JobInfo info = new JobInfo.Builder(123,componentName)

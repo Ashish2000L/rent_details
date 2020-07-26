@@ -9,7 +9,10 @@ import android.app.DownloadManager;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -126,7 +129,11 @@ public class ListOfRentersForAdmin extends AppCompatActivity {
         {
             startActivity(new Intent(getApplicationContext(),new_renter.class)
             .putExtra("username",byadmin));
-        }
+        }else
+            if(item.getItemId()==R.id.reportbug){
+                startActivity(new Intent(getApplicationContext(),bugreport.class)
+                .putExtra("username",byadmin));
+            }
 
         return true;
     }
@@ -176,6 +183,7 @@ public class ListOfRentersForAdmin extends AppCompatActivity {
 
                     } catch (Exception e) {
                         e.printStackTrace();
+                        new erroinfetch().execute(e.getMessage());
                     }
                 }
             progressDialog.dismiss();
@@ -188,6 +196,9 @@ public class ListOfRentersForAdmin extends AppCompatActivity {
                         Toast.makeText(ListOfRentersForAdmin.this, "Connection Failed!!", Toast.LENGTH_SHORT).show();
 //                        details_of_server.setText(error.getMessage());
                         //Toast.makeText(ListOfRentersForAdmin.this, error.getMessage(), Toast.LENGTH_SHORT).show();
+                        if(error.networkResponse!=null){
+                            new erroinfetch().execute("error code"+String.valueOf(error.networkResponse.statusCode));
+                        }
                     }
                 }){
             @Override
@@ -237,7 +248,10 @@ public class ListOfRentersForAdmin extends AppCompatActivity {
                             @Override
                             public void onErrorResponse(VolleyError error) {
                                 progressDialog.dismiss();
-                                Toast.makeText(ListOfRentersForAdmin.this, error.getMessage(), Toast.LENGTH_SHORT).show();
+                                Toast.makeText(ListOfRentersForAdmin.this, "failed to connect!", Toast.LENGTH_SHORT).show();
+                                if(error.networkResponse!=null)
+                                    new erroinfetch().execute("error code in deleteuserdata "+error.networkResponse.statusCode);
+
                             }
                         }){
                     @Override
@@ -266,5 +280,52 @@ public class ListOfRentersForAdmin extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         finishAffinity();
+    }
+
+    public class erroinfetch extends AsyncTask<String,Void,Void>{
+
+        public static final  String shared_pref="shared_prefs";
+        public static  final String user="username";
+        public String loginusername;
+        private String errorurl="https://rentdetails.000webhostapp.com/error_in_app.php";
+        private String TAG="errorfinding";
+        private String classname="ListOfRentersForAdmin: ";
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            SharedPreferences sharedPreferences = getSharedPreferences(shared_pref,MODE_PRIVATE);
+            loginusername=sharedPreferences.getString(user,"");
+        }
+
+        @Override
+        protected Void doInBackground(String... strings) {
+
+            final String errors=strings[0];
+
+            StringRequest request = new StringRequest(Request.Method.POST, errorurl, new Response.Listener<String>() {
+                @Override
+                public void onResponse(String response) {
+
+                }
+            }, new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError error) {
+                    Log.d(TAG, "onErrorResponse: ");
+                }
+            }){
+                @Override
+                protected Map<String, String> getParams() throws AuthFailureError {
+                    Map<String,String> params = new HashMap<String, String>();
+                    params.put("username",loginusername);
+                    params.put("error",classname+errors);
+                    return params;
+                }
+            };
+            RequestQueue queue = Volley.newRequestQueue(ListOfRentersForAdmin.this);
+            queue.add(request);
+
+            return null;
+        }
     }
 }

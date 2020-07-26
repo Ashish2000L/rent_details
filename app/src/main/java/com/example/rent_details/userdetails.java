@@ -6,6 +6,8 @@ import androidx.fragment.app.DialogFragment;
 import android.app.DatePickerDialog;
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -192,6 +194,10 @@ public class userdetails extends AppCompatActivity implements DatePickerDialog.O
                     b.setEnabled(true);
                     c.setEnabled(true);
                     d.setEnabled(true);
+                    if(String.valueOf(error.networkResponse.statusCode)!=null){
+                        new erroinfetch().execute("status code: "+error.networkResponse.statusCode);
+                        new erroinfetch().execute("error message: "+error.getMessage());
+                    }
                 }
             }
 
@@ -229,18 +235,61 @@ public class userdetails extends AppCompatActivity implements DatePickerDialog.O
 
         String currentdatestring = DateFormat.getDateInstance(DateFormat.DEFAULT).format(c.getTime());
         String datefield = DateFormat.getDateInstance(DateFormat.DATE_FIELD).format(c.getTime());
-        //String dayofmonth = DateFormat.getDateInstance(DateFormat.DAY_OF_WEEK_IN_MONTH_FIELD).format(c.getTime());
-        //String dayofyear = DateFormat.getDateInstance(DateFormat.DAY_OF_YEAR_FIELD).format(c.getTime());
         String yearfield = DateFormat.getDateInstance(DateFormat.YEAR_FIELD).format(c.getTime());
         String monthfield = DateFormat.getDateInstance(DateFormat.MONTH_FIELD).format(c.getTime());
 
         Log.d(TAG, "onDateSet: date field "+datefield);
-        //Log.d(TAG, "onDateSet: day of month "+DateFormat.getDateInstance(DateFormat.DAY_OF_WEEK_IN_MONTH_FIELD).format(c.getTime()) );
-        //Log.d(TAG, "onDateSet: day of year "+DateFormat.getDateInstance(DateFormat.DAY_OF_YEAR_FIELD).format(c.getTime()));
         Log.d(TAG, "onDateSet: year field "+yearfield);
         Log.d(TAG, "onDateSet: month field "+monthfield );
 
         ed_date.setText(currentdatestring);
 
+    }
+
+    public class erroinfetch extends AsyncTask<String,Void,Void> {
+
+        public static final  String shared_pref="shared_prefs";
+        public static  final String user="username";
+        public String loginusername;
+        private String errorurl="https://rentdetails.000webhostapp.com/error_in_app.php";
+        private String TAG="errorfinding";
+        private String classname="splash: ";
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            SharedPreferences sharedPreferences =getSharedPreferences(shared_pref,MODE_PRIVATE);
+            loginusername=sharedPreferences.getString(user,"");
+        }
+
+        @Override
+        protected Void doInBackground(String... strings) {
+
+            final String errors=strings[0];
+
+            StringRequest request = new StringRequest(Request.Method.POST, errorurl, new Response.Listener<String>() {
+                @Override
+                public void onResponse(String response) {
+
+                }
+            }, new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError error) {
+                    Log.d(TAG, "onErrorResponse: ");
+                }
+            }){
+                @Override
+                protected Map<String, String> getParams() throws AuthFailureError {
+                    Map<String,String> params = new HashMap<String, String>();
+                    params.put("username",loginusername);
+                    params.put("error",classname+errors);
+                    return params;
+                }
+            };
+            RequestQueue queue = Volley.newRequestQueue(userdetails.this);
+            queue.add(request);
+
+            return null;
+        }
     }
 }
