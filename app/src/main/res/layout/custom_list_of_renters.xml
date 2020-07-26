@@ -6,10 +6,15 @@
     android:layout_height="wrap_content"
     android:layout_gravity="center_horizontal"
     android:gravity="center_horizontal"
-    android:paddingLeft="5dp"
-    android:paddingRight="5dp"
-    android:paddingTop="2dp"
-    android:paddingBottom="2dp">
+    android:background="@drawable/borderpopup"
+    >
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:background="@drawable/popupheading"
+        >
 
     <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
@@ -55,4 +60,5 @@
             </LinearLayout>
         </LinearLayout>
     </androidx.cardview.widget.CardView>
+    </LinearLayout>
 </LinearLayout>

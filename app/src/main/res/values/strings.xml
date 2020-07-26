@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">Rent Details</string>
+    <string name="request">We are sorry to hear that you are facing some issues. Your issue has been successfullt
+    send to us and our team will soon contact you if the provided information is not sufficient.
+    we are happy to help you.</string>
+    <string name="regards">Thank you for your patience.</string>
 </resources>

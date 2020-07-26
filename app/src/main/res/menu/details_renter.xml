@@ -10,7 +10,11 @@
         android:id="@+id/renter_setting"
         android:icon="@drawable/profile"
         android:title="Settings"
-        app:showAsAction="always"/>
+        app:showAsAction="never"/>
+    <item
+        android:id="@+id/budreport"
+        android:title="Report Bug"
+        app:showAsAction="never"/>
 
 
 </menu>

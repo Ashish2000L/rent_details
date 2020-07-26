@@ -12,4 +12,7 @@
     <color name="colorsame">#09D8BB</color>
     <color name="center">#E153AF97</color>
     <color name="end">#DDA1DDCC</color>
+    <color name="strtbug">#E90A0909</color>
+    <color name="centerbug">#05C983</color>
+    <color name="endbug">#2A552B</color>
 </resources>
