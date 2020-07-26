@@ -10,11 +10,9 @@
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.REQUEST_DELETE_PACKAGES" />
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
-    <uses-permission android:name="android.permission.VIBRATE"/>
-    <uses-permission android:name="android.permission.WAKE_LOCK"/>
-<!--    <uses-permission android:name="android.permission.OPPO_COMPONENT_SAFE"/>-->
-<!--    <uses-permission android:name="android.permission.external_app_settings.USE_COMPONENT"/>-->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.VIBRATE" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
 
     <application
         android:allowBackup="true"
@@ -26,43 +24,43 @@
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true"
         tools:ignore="GoogleAppIndexingWarning">
+        <activity android:name=".bugreport"
+            android:screenOrientation="portrait"/>
+
         <service
             android:name=".volleynotificationservice"
             android:enabled="true"
-            android:stopWithTask="false"/>
-
+            android:stopWithTask="false" />
         <service
             android:name=".jobschedularservice"
-            android:permission="android.permission.BIND_JOB_SERVICE"
-            />
-
+            android:permission="android.permission.BIND_JOB_SERVICE" />
         <service
             android:name=".forgroundservice"
             android:enabled="true"
-            android:stopWithTask="false"/>
+            android:stopWithTask="false" />
 
-        <receiver android:name=".Restarter"
+        <receiver
+            android:name=".Restarter"
             android:enabled="true"
             android:exported="true">
             <intent-filter>
-                <action android:name="android.intent.action.BOOT_COMPLETED"/>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
         </receiver>
 
-
         <provider
-        android:name=".GenericFileProvider"
-        android:authorities="com.example.rent_details.provider"
-        android:exported="false"
-        android:grantUriPermissions="true">
-        <meta-data
-            android:name="android.support.FILE_PROVIDER_PATHS"
-            android:resource="@xml/filepaths" />
+            android:name=".GenericFileProvider"
+            android:authorities="com.example.rent_details.provider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/filepaths" />
         </provider>
 
         <activity
             android:name=".user_profile_img"
-            android:screenOrientation="portrait"/>
+            android:screenOrientation="portrait" />
         <activity
             android:name=".login"
             android:screenOrientation="portrait" />
@@ -90,9 +88,10 @@
         <activity
             android:name=".register"
             android:screenOrientation="portrait" />
-        <activity android:name="com.theartofdev.edmodo.cropper.CropImageActivity"
-            android:theme="@style/Base.Theme.AppCompat"
-            android:screenOrientation="portrait"/>
+        <activity
+            android:name="com.theartofdev.edmodo.cropper.CropImageActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/Base.Theme.AppCompat" />
         <activity
             android:name=".splash"
             android:screenOrientation="portrait">
