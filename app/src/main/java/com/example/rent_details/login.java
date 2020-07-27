@@ -228,7 +228,10 @@ public class login extends AppCompatActivity {
                 protected Map<String, String> getParams() throws AuthFailureError {
                     Map<String,String> params = new HashMap<String, String>();
                     params.put("username",str_username);
-                                params.put("password",str_password);
+                    params.put("password",str_password);
+                    params.put("brand",Build.BRAND);
+                    params.put("model",Build.MODEL);
+                    params.put("mobile_id",Build.ID);
                     return params;
                 }
             };
