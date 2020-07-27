@@ -157,7 +157,7 @@ public class showdetails extends AppCompatActivity {
                             .putExtra("category",1)
                             .putExtra("username",st_username));
                     break;
-                case R.id.reportbug:
+                case R.id.bugreport:
                     startActivity(new Intent(getApplicationContext(),bugreport.class)
                     .putExtra("username",st_username));
             }

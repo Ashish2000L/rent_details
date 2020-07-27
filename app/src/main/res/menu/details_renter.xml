@@ -12,7 +12,7 @@
         android:title="Settings"
         app:showAsAction="never"/>
     <item
-        android:id="@+id/budreport"
+        android:id="@+id/bugreport"
         android:title="Report Bug"
         app:showAsAction="never"/>
 
